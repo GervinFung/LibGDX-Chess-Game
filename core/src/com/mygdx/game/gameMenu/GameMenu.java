@@ -63,6 +63,12 @@ public enum GameMenu {;
             private final MyGdxGame myGdxGame;
 
             private enum TIMER_MINUTE {
+                DEFAULT {
+                    @Override
+                    int getMinute() { return 30; }
+                    @Override
+                    public String toString() { return "Default (30 minutes)"; }
+                },
                 FIVE {
                     @Override
                     int getMinute() { return 5; }
@@ -101,7 +107,7 @@ public enum GameMenu {;
                 super("Setup Timer", GUI_UTILS.UTILS.UI_SKIN);
                 this.myGdxGame = myGdxGame;
                 this.timer = new SelectBox<>(GUI_UTILS.UTILS.UI_SKIN);
-                this.timer.setItems(TIMER_MINUTE.FIVE, TIMER_MINUTE.TEN, TIMER_MINUTE.FIFTEEN, TIMER_MINUTE.THIRTY, TIMER_MINUTE.FORTY_FIVE, TIMER_MINUTE.SIXTY);
+                this.timer.setItems(TIMER_MINUTE.DEFAULT, TIMER_MINUTE.FIVE, TIMER_MINUTE.TEN, TIMER_MINUTE.FIFTEEN, TIMER_MINUTE.THIRTY, TIMER_MINUTE.FORTY_FIVE, TIMER_MINUTE.SIXTY);
                 this.add(this.timer);
                 this.minute = BoardUtils.UTILS.DEFAULT_TIMER_MINUTE;
                 this.button("Ok", true).button("Cancel", null);
