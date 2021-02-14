@@ -1,0 +1,146 @@
+
+gameTextureAtlas.png
+size: 2048, 256
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+BB
+  rotate: false
+  xy: 1368, 130
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+BK
+  rotate: false
+  xy: 1522, 53
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+BN
+  rotate: false
+  xy: 1522, 130
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+BP
+  rotate: false
+  xy: 1599, 53
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+BQ
+  rotate: false
+  xy: 1445, 130
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+BR
+  rotate: false
+  xy: 1214, 53
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+BUMBLEBEE
+  rotate: false
+  xy: 1012, 5
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+CLASSIC
+  rotate: false
+  xy: 2, 5
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+DARK_BLUE
+  rotate: false
+  xy: 608, 5
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+DARK_GRAY
+  rotate: false
+  xy: 810, 5
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+LIGHT_BLUE
+  rotate: false
+  xy: 204, 5
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+LIGHT_GRAY
+  rotate: false
+  xy: 406, 5
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+WB
+  rotate: false
+  xy: 1445, 53
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+WK
+  rotate: false
+  xy: 1291, 130
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+WN
+  rotate: false
+  xy: 1214, 130
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+WP
+  rotate: false
+  xy: 1291, 53
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+WQ
+  rotate: false
+  xy: 1599, 130
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+WR
+  rotate: false
+  xy: 1368, 53
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+transparent
+  rotate: false
+  xy: 1214, 50
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+whitePixel
+  rotate: false
+  xy: 2, 2
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
