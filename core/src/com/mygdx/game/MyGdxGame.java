@@ -10,12 +10,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.chess.engine.board.Board;
-import com.chess.engine.board.BoardUtils;
-import com.mygdx.game.board.GameBoard;
-import com.mygdx.game.gameMenu.GameMenu;
-import com.mygdx.game.moveHistory.MoveHistory;
-import com.mygdx.game.timer.TimerPanel;
+import com.mygdx.game.chess.engine.board.Board;
+import com.mygdx.game.chess.engine.board.BoardUtils;
+import com.mygdx.game.GUI.board.board.GameBoard;
+import com.mygdx.game.GUI.board.gameMenu.GameMenu;
+import com.mygdx.game.GUI.board.gameMenu.AIButton;
+import com.mygdx.game.GUI.board.gameMenu.GameOption;
+import com.mygdx.game.GUI.board.gameMenu.GamePreference;
+import com.mygdx.game.GUI.board.moveHistory.MoveHistory;
+import com.mygdx.game.GUI.board.timer.TimerPanel;
 
 public final class MyGdxGame extends ApplicationAdapter {
 
@@ -26,7 +29,6 @@ public final class MyGdxGame extends ApplicationAdapter {
 	private GameBoard.DisplayOnlyBoard displayOnlyBoard;
 	private MoveHistory moveHistory;
 	private TimerPanel gameTimerPanel;
-	private GameMenu.AIButton aiButton;
 
 	//setter
 	public void updateChessBoard(final Board board) { this.chessBoard = board; }
@@ -38,14 +40,13 @@ public final class MyGdxGame extends ApplicationAdapter {
 	public Stage getStage() { return this.stage; }
 	public MoveHistory getMoveHistory() { return this.moveHistory; }
 	public TimerPanel getGameTimerPanel() { return this.gameTimerPanel; }
-	public GameMenu.AIButton getAiButton() { return this.aiButton; }
 
 	@Override
 	public void create () {
 		this.stage = new Stage(new FitViewport(1200, 640), new SpriteBatch());
 
 		Gdx.input.setInputProcessor(stage);
-		Gdx.graphics.setTitle("Simple Chess 2.0");
+		Gdx.graphics.setTitle("LibGDX Simple Parallel Chess 2.0");
 
 		final VerticalGroup verticalGroup = new VerticalGroup();
 
@@ -65,7 +66,7 @@ public final class MyGdxGame extends ApplicationAdapter {
 	private Stack initGameBoard() {
 		final Stack stack = new Stack();
 
-		this.chessBoard = Board.createStandardBoard(BoardUtils.UTILS.DEFAULT_TIMER_MINUTE, BoardUtils.UTILS.DEFAULT_TIMER_SECOND, BoardUtils.UTILS.DEFAULT_TIMER_MILLISECOND);
+		this.chessBoard = Board.createStandardBoard(BoardUtils.DEFAULT_TIMER_MINUTE, BoardUtils.DEFAULT_TIMER_SECOND, BoardUtils.DEFAULT_TIMER_MILLISECOND);
 		this.gameBoard = new GameBoard(this);
 		this.displayOnlyBoard = new GameBoard.DisplayOnlyBoard();
 
@@ -87,18 +88,11 @@ public final class MyGdxGame extends ApplicationAdapter {
 
 	private Table initGameMenu() {
 		final Table table = new Table();
-
-		table.add(new GameMenu.NewGameButton(this)).width(150);
-		table.add(new GameMenu.SaveGameButton(this)).width(150);
-		table.add(new GameMenu.LoadGameButton(this)).width(150);
-
-		table.add(new GameMenu.FlipBoardButton(this)).width(150);
-		table.add(new GameMenu.BoardColorButton(this)).width(150);
-		this.aiButton = new GameMenu.AIButton(this);
-		table.add(this.aiButton).width(150);
-		table.add(new GameMenu.UndoButton(this)).width(150);
-		table.add(new GameMenu.ExitGameButton(this)).width(150);
-
+		final int BUTTON_WIDTH = 250;
+		table.add(new GameMenu(this)).width(BUTTON_WIDTH);
+		table.add(new GamePreference(this)).width(BUTTON_WIDTH);
+		table.add(new GameOption(this)).width(BUTTON_WIDTH);
+		table.add(new AIButton(this)).width(BUTTON_WIDTH);
 		return table;
 	}
 
@@ -109,16 +103,20 @@ public final class MyGdxGame extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		this.stage.act(Gdx.graphics.getDeltaTime());
-		if (this.gameTimerPanel.isTimerContinue()) {
+		if (this.gameTimerPanel.isTimerContinue() && !this.gameTimerPanel.isPauseTimerOption()) {
 			this.gameTimerPanel.update(this);
+			if (this.gameBoard.isAIPlayer(this.chessBoard.currentPlayer()) && this.chessBoard.currentPlayer().isTimeOut()) {
+				this.gameBoard.getArtificialIntelligence().setStopAI(true);
+			}
 		}
+		this.stage.getBatch().begin();
+		this.stage.getBatch().end();
 		this.stage.draw();
 	}
 
 	@Override
 	public void dispose() {
 		this.stage.dispose();
-		GUI_UTILS.UTILS.dispose();
 		this.stage.getBatch().dispose();
 	}
 }

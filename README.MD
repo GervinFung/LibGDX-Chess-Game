@@ -1,15 +1,16 @@
-A simple 2 player chess AI that implemented minimax & alpha-beta pruning & move-ordering & pawn structure analysis to fully optimise the AI with a proper FEN file format
+A simple 2 player chess AI that implemented minimax & alpha-beta pruning & move-ordering & pawn structure analysis to fully optimise the AI
+It's cross-platform as well, unfortunately it cannot run on web as it is a multithreaded program
+
+NOTE: **Can't create ipa for ios since I am not using macOS...**
 
 ## Folder Structure
 
 The workspace contains two folders by default, where:
 
 - `core`: the folder to maintain sources, stores the code for chess engine logic and UI design
-- `assset`: the folder that store images for the UI
+- `asset/resource`: the folder that store textures, skin and font for the UI
 
 ## To play the Game
-
-NOTE: **if AI is thinking, the UI will freeze**
 
 No. | Steps
 --- | ----
@@ -32,10 +33,10 @@ No. | Features
 5.| Show move history
 6.| Choose AI level from 1 to 10
 7.| Show captured piece
-8.| Show AI thinking progress bar
-9.| Undo previous move
-10.| Multithread feature depends on the number of cores of a pc, the greater the better/faster AI can think
-11.| Flip board
-12.| Choose 6 different board colors
+8.| Undo previous move
+9.| Multithreaded feature depends on the number of cores of a pc, the greater the better/faster AI can think
+10.| Flip board
+11.| Choose 6 different board colors
+12.| Pause timer
 
 ![Chess sample](chess.png)

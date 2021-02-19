@@ -1,6 +1,5 @@
 sourceCompatibility = 1.7
 dependencies {
-    implementation files('lib/guava-18.0.jar')
     implementation 'junit:junit:4.13.1'
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
