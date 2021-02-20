@@ -13,7 +13,7 @@ public final class CancelButton extends TextButton {
         super("Cancel", GUI_UTILS.UI_SKIN);
         this.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
+            public void clicked(final InputEvent event, final float x, final float y) {
                 dialog.remove();
                 myGdxGame.getGameTimerPanel().continueTimer(true);
             }

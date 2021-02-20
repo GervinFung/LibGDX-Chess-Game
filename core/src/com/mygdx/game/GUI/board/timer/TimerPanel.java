@@ -43,7 +43,7 @@ public final class TimerPanel extends Table {
         abstract TIMER_PANEL_DIRECTION getOpposite();
         private void update(final TimerPanel timerPanel, final MyGdxGame myGdxGame) {
             if (myGdxGame.getGameBoard().isGameEnd()) { return; }
-            myGdxGame.getGameBoard().displayEndGameMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
+            myGdxGame.getGameBoard().displayTimeOutMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
             if (myGdxGame.getChessBoard().currentPlayer().getLeague().isWhite()) {
                 timerPanel.whitePlayerTimerTable.updateTimer(myGdxGame.getChessBoard().currentPlayer());
             } else {

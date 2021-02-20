@@ -103,6 +103,9 @@ public final class MyGdxGame extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		this.stage.act(Gdx.graphics.getDeltaTime());
+		if (this.getGameBoard().isAIThinking()) {
+			this.getGameBoard().getArtificialIntelligence().getProgressBar().setValue(this.getGameBoard().getArtificialIntelligence().getMoveCount());
+		}
 		if (this.gameTimerPanel.isTimerContinue() && !this.gameTimerPanel.isPauseTimerOption()) {
 			this.gameTimerPanel.update(this);
 			if (this.gameBoard.isAIPlayer(this.chessBoard.currentPlayer()) && this.chessBoard.currentPlayer().isTimeOut()) {

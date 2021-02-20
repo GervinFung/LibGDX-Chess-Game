@@ -38,5 +38,6 @@ No. | Features
 10.| Flip board
 11.| Choose 6 different board colors
 12.| Pause timer
+13.| Show AI thinking progress bar
 
 ![Chess sample](chess.png)

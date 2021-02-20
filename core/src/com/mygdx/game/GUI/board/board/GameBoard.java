@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.mygdx.game.GUI.board.ArtificialIntelligence;
 import com.mygdx.game.GUI.board.GUI_UTILS;
@@ -68,7 +69,7 @@ public final class GameBoard extends Table {
         this.highlightMove = true;
         this.highlightPreviousMove = true;
         //immutable
-        this.artificialIntelligence = new ArtificialIntelligence(myGdxGame);
+        this.artificialIntelligence = new ArtificialIntelligence();
         final PropertyChangeListener gameSetupPropertyChangeListener = new PropertyChangeListener() {
             @Override
             public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
@@ -76,8 +77,9 @@ public final class GameBoard extends Table {
                         && !myGdxGame.getChessBoard().currentPlayer().isInCheckmate()
                         && !myGdxGame.getChessBoard().currentPlayer().isInStalemate()) {
                     setAIThinking(true);
-                    artificialIntelligence.startAI();
+                    artificialIntelligence.startAI(myGdxGame);
                 }
+                displayEndGameMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
             }
         };
         this.gameSetupPropertyChangeSupport = new PropertyChangeSupport(gameSetupPropertyChangeListener);
@@ -168,6 +170,15 @@ public final class GameBoard extends Table {
         this.board_direction.drawBoard(myGdxGame, this, chessBoard, displayOnlyBoard);
     }
 
+    public void displayTimeOutMessage(final Board chessBoard, final Stage stage) {
+        if (chessBoard.currentPlayer().isTimeOut()) {
+            final Label label = new Label(chessBoard.currentPlayer() + " player is timed out!", GUI_UTILS.UI_SKIN);
+            label.setColor(Color.BLACK);
+            new Dialog("Time out", GUI_UTILS.UI_SKIN).text(label).button("Ok").show(stage);
+            this.setGameEnd(true);
+        }
+    }
+
     public void displayEndGameMessage(final Board chessBoard, final Stage stage) {
         final Label label;
         if (chessBoard.currentPlayer().isInCheckmate()) {
@@ -179,11 +190,6 @@ public final class GameBoard extends Table {
             label = new Label(chessBoard.currentPlayer() + " player is in stalemate!", GUI_UTILS.UI_SKIN);
             label.setColor(Color.BLACK);
             new Dialog("Stalemate", GUI_UTILS.UI_SKIN).text(label).button("Ok").show(stage);
-            this.setGameEnd(true);
-        } else if (chessBoard.currentPlayer().isTimeOut()) {
-            label = new Label(chessBoard.currentPlayer() + " player is timed out!", GUI_UTILS.UI_SKIN);
-            label.setColor(Color.BLACK);
-            new Dialog("Time out", GUI_UTILS.UI_SKIN).text(label).button("Ok").show(stage);
             this.setGameEnd(true);
         }
     }

@@ -11,6 +11,9 @@ import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.MoveTransition;
 import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.chess.engine.pieces.Piece;
+
+import java.util.Collection;
 
 public final class TileActor extends Image {
 
@@ -24,6 +27,7 @@ public final class TileActor extends Image {
                     super.clicked(event, x, y);
                     myGdxGame.getGameBoard().setAiMove(null);
                     myGdxGame.getGameBoard().setHumanMove(null);
+
                     if (myGdxGame.getGameBoard().getGameEnd() || myGdxGame.getGameBoard().isAIThinking()) { return ; }
 
                     if (myGdxGame.getGameBoard().getHumanPiece() ==  null) {
@@ -40,32 +44,52 @@ public final class TileActor extends Image {
                             final Move move = Move.MoveFactory.createMove(myGdxGame.getChessBoard(), myGdxGame.getGameBoard().getHumanPiece(), tileID);
                             final MoveTransition transition = myGdxGame.getChessBoard().currentPlayer().makeMove(move);
                             if (transition.getMoveStatus().isDone()) {
+                                myGdxGame.getGameBoard().setHumanPiece(null);
                                 if (myGdxGame.getGameBoard().isHighlightPreviousMove()) {
                                     myGdxGame.getGameBoard().setHumanMove(move);
                                 }
                                 myGdxGame.updateChessBoard(transition.getLatestBoard());
+
                                 if (move instanceof Move.PawnPromotion) {
                                     //display pawn promotion interface
                                     ((Move.PawnPromotion)move).startLibGDXPromotion(myGdxGame);
                                 } else {
                                     myGdxGame.getGameBoard().drawBoard(myGdxGame, myGdxGame.getChessBoard(), myGdxGame.getDisplayOnlyBoard());
+                                    myGdxGame.getMoveHistory().getMoveLog().addMove(move);
+                                    myGdxGame.getMoveHistory().updateMoveHistory();
+                                    if (myGdxGame.getGameBoard().isAIPlayer(myGdxGame.getChessBoard().currentPlayer())) {
+                                        myGdxGame.getGameBoard().fireGameSetupPropertyChangeSupport();
+                                    } else {
+                                        myGdxGame.getGameBoard().displayEndGameMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
+                                    }
                                 }
-                                myGdxGame.getMoveHistory().getMoveLog().addMove(move);
-                                myGdxGame.getMoveHistory().updateMoveHistory();
-                                if (myGdxGame.getGameBoard().isAIPlayer(myGdxGame.getChessBoard().currentPlayer())) {
-                                    myGdxGame.getGameBoard().fireGameSetupPropertyChangeSupport();
+                            } else if (getPiece(myGdxGame.getChessBoard().getAllPieces(), myGdxGame.getGameBoard().getHumanPiece(), tileID) != null) {
+                                myGdxGame.getGameBoard().drawBoard(myGdxGame, myGdxGame.getChessBoard(), myGdxGame.getDisplayOnlyBoard());
+                                myGdxGame.getGameBoard().setHumanPiece(myGdxGame.getChessBoard().getTile(tileID).getPiece());
+                                if (myGdxGame.getGameBoard().isHighlightMove()) {
+                                    myGdxGame.getDisplayOnlyBoard().highlightLegalMove(myGdxGame.getGameBoard(), myGdxGame.getChessBoard());
                                 }
+                            } else {
+                                myGdxGame.getGameBoard().drawBoard(myGdxGame, myGdxGame.getChessBoard(), myGdxGame.getDisplayOnlyBoard());
+                                myGdxGame.getGameBoard().setHumanPiece(null);
                             }
                         } else {
                             myGdxGame.getGameBoard().drawBoard(myGdxGame, myGdxGame.getChessBoard(), myGdxGame.getDisplayOnlyBoard());
-                            myGdxGame.getGameBoard().setAiMove(null);
-                            myGdxGame.getGameBoard().setHumanMove(null);
+                            myGdxGame.getGameBoard().setHumanPiece(null);
                         }
-                        myGdxGame.getGameBoard().setHumanPiece(null);
                     }
                 } catch (final NullPointerException ignored) {}
             }
         });
+    }
+
+    private Piece getPiece(final Collection<Piece> getAllPieces, final Piece humanPiece, final int tileID) {
+        for (final Piece piece : getAllPieces) {
+            if (piece.getPiecePosition() == tileID && humanPiece.getLeague() == piece.getLeague()) {
+                return piece;
+            }
+        }
+        return null;
     }
 
     protected final static class DisplayOnlyTile extends Image {

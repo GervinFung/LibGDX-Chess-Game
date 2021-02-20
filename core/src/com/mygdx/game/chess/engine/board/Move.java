@@ -300,6 +300,13 @@ public abstract class Move implements Serializable {
                         promoteDialog.remove();
                         myGdxGame.updateChessBoard(promoteLibGDXPawn(myGdxGame.getChessBoard()));
                         myGdxGame.getGameBoard().drawBoard(myGdxGame, myGdxGame.getChessBoard(), myGdxGame.getDisplayOnlyBoard());
+                        myGdxGame.getMoveHistory().getMoveLog().addMove(PawnPromotion.this);
+                        myGdxGame.getMoveHistory().updateMoveHistory();
+                        if (!myGdxGame.getGameBoard().isAIPlayer(myGdxGame.getChessBoard().currentPlayer())) {
+                            myGdxGame.getGameBoard().fireGameSetupPropertyChangeSupport();
+                        } else {
+                            myGdxGame.getGameBoard().displayEndGameMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
+                        }
                     }
                 });
             }

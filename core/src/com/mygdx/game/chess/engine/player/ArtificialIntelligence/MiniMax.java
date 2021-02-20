@@ -25,6 +25,7 @@ public final class MiniMax {
     private int quiescenceCount;
     private static final int MAX_QUIESCENCE = 5000 * 5;
     private volatile boolean terminateProcess;
+    private final AtomicInteger moveCount;
 
     private enum MoveSorter {
 
@@ -72,6 +73,7 @@ public final class MiniMax {
             this.searchDepth = searchDepth;
         }
         this.quiescenceCount = 0;
+        this.moveCount = new AtomicInteger(0);
         this.terminateProcess = false;
     }
 
@@ -121,6 +123,7 @@ public final class MiniMax {
                                     isCheckMate.set(true);
                                 }
                             }
+                            moveCount.set(moveCount.get() + 1);
                         }
                     }
                 );
@@ -137,8 +140,11 @@ public final class MiniMax {
         return bestMove.get();
     }
 
+    //setter
     public void setTerminateProcess(final boolean terminateProcess) { this.terminateProcess = terminateProcess; }
+    //getter
     public boolean getTerminateProcess() { return this.terminateProcess; }
+    public int getMoveCount() { return this.moveCount.get(); }
 
     private int max(final Board board, final int depth, final int highest, final int lowest) {
         if (this.terminateProcess) {
