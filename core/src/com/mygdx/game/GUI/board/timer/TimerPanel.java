@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.player.Player;
 import com.mygdx.game.GUI.board.GUI_UTILS;
-import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.GUI.board.gameScreen.GameScreen;
 
 public final class TimerPanel extends Table {
 
@@ -41,13 +41,13 @@ public final class TimerPanel extends Table {
         };
         abstract void flip(final TimerPanel timerPanel);
         abstract TIMER_PANEL_DIRECTION getOpposite();
-        private void update(final TimerPanel timerPanel, final MyGdxGame myGdxGame) {
-            if (myGdxGame.getGameBoard().isGameEnd()) { return; }
-            myGdxGame.getGameBoard().displayTimeOutMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
-            if (myGdxGame.getChessBoard().currentPlayer().getLeague().isWhite()) {
-                timerPanel.whitePlayerTimerTable.updateTimer(myGdxGame.getChessBoard().currentPlayer());
+        private void update(final TimerPanel timerPanel, final GameScreen gameScreen) {
+            if (gameScreen.getGameBoard().isGameEnd()) { return; }
+            gameScreen.getGameBoard().displayTimeOutMessage(gameScreen.getChessBoard(), gameScreen.getStage());
+            if (gameScreen.getChessBoard().currentPlayer().getLeague().isWhite()) {
+                timerPanel.whitePlayerTimerTable.updateTimer(gameScreen.getChessBoard().currentPlayer());
             } else {
-                timerPanel.blackPlayerTimerTable.updateTimer(myGdxGame.getChessBoard().currentPlayer());
+                timerPanel.blackPlayerTimerTable.updateTimer(gameScreen.getChessBoard().currentPlayer());
             }
         }
     }
@@ -82,7 +82,7 @@ public final class TimerPanel extends Table {
         this.blackPlayerTimerTable.resetTimer(blackPlayer);
     }
 
-    public void update(final MyGdxGame myGdxGame) { this.timer_panel_direction.update(this, myGdxGame); }
+    public void update(final GameScreen gameScreen) { this.timer_panel_direction.update(this, gameScreen); }
 
     private final static class PlayerTimerTable extends Table {
 

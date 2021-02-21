@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.mygdx.game.GUI.board.ArtificialIntelligence;
 import com.mygdx.game.GUI.board.GUI_UTILS;
@@ -15,7 +14,7 @@ import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.pieces.Piece;
 import com.mygdx.game.chess.engine.player.Player;
-import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.GUI.board.gameScreen.GameScreen;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -58,7 +57,7 @@ public final class GameBoard extends Table {
     public boolean isHighlightMove() { return this.highlightMove; }
     public boolean isHighlightPreviousMove() { return this.highlightPreviousMove; }
 
-    public GameBoard(final MyGdxGame myGdxGame) {
+    public GameBoard(final GameScreen gameScreen) {
         //mutable
         this.humanPiece = null;
         this.humanMove = null;
@@ -73,13 +72,14 @@ public final class GameBoard extends Table {
         final PropertyChangeListener gameSetupPropertyChangeListener = new PropertyChangeListener() {
             @Override
             public void propertyChange(final PropertyChangeEvent propertyChangeEvent) {
-                if (isAIPlayer(myGdxGame.getChessBoard().currentPlayer())
-                        && !myGdxGame.getChessBoard().currentPlayer().isInCheckmate()
-                        && !myGdxGame.getChessBoard().currentPlayer().isInStalemate()) {
-                    setAIThinking(true);
-                    artificialIntelligence.startAI(myGdxGame);
+                if (isAIPlayer(gameScreen.getChessBoard().currentPlayer())
+                        && !gameScreen.getChessBoard().currentPlayer().isInCheckmate()
+                        && !gameScreen.getChessBoard().currentPlayer().isInStalemate()) {
+                    if (!isAIThinking()) {
+                        setAIThinking(true);
+                        artificialIntelligence.startAI(gameScreen);
+                    }
                 }
-                displayEndGameMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
             }
         };
         this.gameSetupPropertyChangeSupport = new PropertyChangeSupport(gameSetupPropertyChangeListener);
@@ -91,7 +91,7 @@ public final class GameBoard extends Table {
             if (i % 8 == 0) {
                 this.row();
             }
-            this.add(new TileActor(myGdxGame, this.textureRegion(myGdxGame.getChessBoard(), i), i)).size(GUI_UTILS.TILE_SIZE);
+            this.add(new TileActor(gameScreen, this.textureRegion(gameScreen.getChessBoard(), i), i)).size(GUI_UTILS.TILE_SIZE);
         }
         this.validate();
     }
@@ -99,7 +99,7 @@ public final class GameBoard extends Table {
     private enum BOARD_DIRECTION {
         NORMAL_BOARD {
             @Override
-            void drawBoard(final MyGdxGame myGdxGame, final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard) {
+            void drawBoard(final GameScreen gameScreen, final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard) {
                 gameBoard.clearChildren();
                 displayOnlyBoard.clearChildren();
                 for (int i = 0; i < BoardUtils.NUM_TILES; i+=1) {
@@ -107,9 +107,9 @@ public final class GameBoard extends Table {
                         gameBoard.row();
                         displayOnlyBoard.row();
                     }
-                    gameBoard.add(new TileActor(myGdxGame, gameBoard.textureRegion(chessBoard, i), i)).size(GUI_UTILS.TILE_SIZE);
+                    gameBoard.add(new TileActor(gameScreen, gameBoard.textureRegion(chessBoard, i), i)).size(GUI_UTILS.TILE_SIZE);
                     final TileActor.DisplayOnlyTile tile = new TileActor.DisplayOnlyTile(i);
-                    tile.repaint(gameBoard, chessBoard, myGdxGame.getDisplayOnlyBoard());
+                    tile.repaint(gameBoard, chessBoard, gameScreen.getDisplayOnlyBoard());
                     displayOnlyBoard.add(tile).size(GUI_UTILS.TILE_SIZE);
                 }
                 gameBoard.validate();
@@ -122,13 +122,13 @@ public final class GameBoard extends Table {
         },
         FLIP_BOARD {
             @Override
-            void drawBoard(final MyGdxGame myGdxGame, final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard) {
+            void drawBoard(final GameScreen gameScreen, final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard) {
                 gameBoard.clearChildren();
                 displayOnlyBoard.clearChildren();
                 for (int i = BoardUtils.NUM_TILES - 1; i >= 0; i-=1) {
-                    gameBoard.add(new TileActor(myGdxGame, gameBoard.textureRegion(chessBoard, i), i)).size(GUI_UTILS.TILE_SIZE);
+                    gameBoard.add(new TileActor(gameScreen, gameBoard.textureRegion(chessBoard, i), i)).size(GUI_UTILS.TILE_SIZE);
                     final TileActor.DisplayOnlyTile tile = new TileActor.DisplayOnlyTile(i);
-                    tile.repaint(gameBoard, chessBoard, myGdxGame.getDisplayOnlyBoard());
+                    tile.repaint(gameBoard, chessBoard, gameScreen.getDisplayOnlyBoard());
                     displayOnlyBoard.add(tile).size(GUI_UTILS.TILE_SIZE);
                     if (i % 8 == 0) {
                         gameBoard.row();
@@ -145,7 +145,7 @@ public final class GameBoard extends Table {
         };
         abstract BOARD_DIRECTION opposite();
         abstract boolean flipped();
-        abstract void drawBoard(final MyGdxGame myGdxGame, final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard);
+        abstract void drawBoard(final GameScreen gameScreen, final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard);
     }
 
     private enum PLAYER_TYPE {
@@ -166,8 +166,8 @@ public final class GameBoard extends Table {
         return this.blackPlayerType == PLAYER_TYPE.COMPUTER;
     }
 
-    public void drawBoard(final MyGdxGame myGdxGame, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard) {
-        this.board_direction.drawBoard(myGdxGame, this, chessBoard, displayOnlyBoard);
+    public void drawBoard(final GameScreen gameScreen, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard) {
+        this.board_direction.drawBoard(gameScreen, this, chessBoard, displayOnlyBoard);
     }
 
     public void displayTimeOutMessage(final Board chessBoard, final Stage stage) {

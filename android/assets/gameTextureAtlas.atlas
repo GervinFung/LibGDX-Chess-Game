@@ -1,145 +1,159 @@
 
 gameTextureAtlas.png
-size: 1024, 256
+size: 2048, 2048
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
 BB
   rotate: false
-  xy: 233, 5
+  xy: 612, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 BK
   rotate: false
-  xy: 618, 5
+  xy: 1074, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 BN
   rotate: false
-  xy: 541, 5
+  xy: 920, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 BP
   rotate: false
-  xy: 772, 5
+  xy: 1228, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 BQ
   rotate: false
-  xy: 387, 5
+  xy: 766, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 BR
   rotate: false
-  xy: 914, 157
+  xy: 306, 232
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 BUMBLEBEE
   rotate: false
-  xy: 762, 82
+  xy: 306, 309
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 CLASSIC
   rotate: false
-  xy: 2, 82
+  xy: 2, 309
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 DARK_BLUE
   rotate: false
-  xy: 458, 82
+  xy: 2, 5
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 DARK_GRAY
   rotate: false
-  xy: 610, 82
+  xy: 154, 157
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 LIGHT_BLUE
   rotate: false
-  xy: 154, 82
+  xy: 2, 157
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 LIGHT_GRAY
   rotate: false
-  xy: 306, 82
+  xy: 154, 309
   size: 150, 150
   orig: 150, 150
   offset: 0, 0
   index: -1
 WB
   rotate: false
-  xy: 464, 5
+  xy: 843, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 WK
   rotate: false
-  xy: 79, 5
+  xy: 458, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 WN
   rotate: false
-  xy: 2, 5
+  xy: 154, 80
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 WP
   rotate: false
-  xy: 156, 5
+  xy: 535, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 WQ
   rotate: false
-  xy: 695, 5
+  xy: 1151, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 WR
   rotate: false
-  xy: 310, 5
+  xy: 689, 384
+  size: 75, 75
+  orig: 75, 75
+  offset: 0, 0
+  index: -1
+chess_logo
+  rotate: false
+  xy: 997, 384
   size: 75, 75
   orig: 75, 75
   offset: 0, 0
   index: -1
 transparent
   rotate: false
-  xy: 2, 2
+  xy: 2031, 1980
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
+welcome
+  rotate: false
+  xy: 2, 461
+  size: 2027, 1520
+  orig: 2027, 1520
+  offset: 0, 0
+  index: -1
 white
   rotate: false
-  xy: 914, 154
+  xy: 2, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

@@ -58,24 +58,24 @@ public final class Board implements Serializable {
     }
 
     public int getMoveCount() { return this.moveCount; }
-
     public Player currentPlayer() {
         return this.currentPlayer;
     }
-
     public Player whitePlayer() {
         return this.whitePlayer;
     }
-
     public Player blackPlayer() {
         return this.blackPlayer;
     }
-
     public Collection<Piece> getWhitePieces() {
         return this.whitePieces;
     }
-
     public Collection<Piece> getBlackPieces() { return this.blackPieces; }
+    public Pawn getEnPassantPawn() { return this.enPassantPawn; }
+    public Tile getTile(final int tileCoordinate) {
+        return gameBoard.get(tileCoordinate);
+    }
+    public Move getTransitionMove() { return this.transitionMove; }
 
     public Collection<Piece> getAllPieces() {
         final Collection<Piece> activePieces = new ArrayList<>(this.whitePieces);
@@ -83,7 +83,6 @@ public final class Board implements Serializable {
         return Collections.unmodifiableCollection(activePieces);
     }
 
-    public Pawn getEnPassantPawn() { return this.enPassantPawn; }
 
     private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
         final List<Move> legalMoves = new ArrayList<>();
@@ -102,13 +101,6 @@ public final class Board implements Serializable {
         }
         return Collections.unmodifiableList(activePieces);
     }
-
-
-    public Tile getTile(final int tileCoordinate) {
-        return gameBoard.get(tileCoordinate);
-    }
-
-    public Move getTransitionMove() { return this.transitionMove; }
 
     public static List<Tile> createGameBoard(final Builder builder) {
         final Tile[] tiles = new Tile[BoardUtils.NUM_TILES];

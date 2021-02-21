@@ -8,14 +8,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.game.chess.engine.pieces.Piece;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class GUI_UTILS implements Disposable{
+public final class GUI_UTILS {
     
     private GUI_UTILS() { throw new RuntimeException("Cannot instantiate GUI_UTILS"); }
     
@@ -26,6 +25,8 @@ public final class GUI_UTILS implements Disposable{
     //public
     public final static int GAME_BOARD_SR_SIZE = 600, TILE_SIZE = 75;
     public final static String MOVE_LOG_STATE = "MOVE_LOG_STATE";
+    public final static TextureRegion BACKGROUND = GET_TILE_TEXTURE_REGION("welcome");
+    public final static TextureRegion LOGO = GET_TILE_TEXTURE_REGION("chess_logo");
     public final static Preferences MOVE_LOG_PREF = Gdx.app.getPreferences("MoveLogPreferences");
     public final static Skin UI_SKIN = new Skin(Gdx.files.internal("UISKIN2/uiskin2.json"));
     public final static TextureRegion WHITE_TEXTURE_REGION = GAME_TEXTURE_ATLAS.findRegion("white");
@@ -132,8 +133,7 @@ public final class GUI_UTILS implements Disposable{
         return Collections.unmodifiableList(BOARD_COLORS);
     }
 
-    @Override
-    public void dispose() {
+    public static void dispose() {
         GAME_TEXTURE_ATLAS.dispose();
         UI_SKIN.dispose();
     }

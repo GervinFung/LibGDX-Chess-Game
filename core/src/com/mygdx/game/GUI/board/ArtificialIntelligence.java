@@ -3,14 +3,13 @@ package com.mygdx.game.GUI.board;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
-import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.GUI.board.gameScreen.GameScreen;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.player.ArtificialIntelligence.MiniMax;
 
@@ -34,14 +33,14 @@ public final class ArtificialIntelligence{
     public ProgressBar getProgressBar() { return this.progressBar; }
     public int getMoveCount() { return this.miniMax.getMoveCount(); }
 
-    private Dialog showProgressBar(final MyGdxGame myGdxGame) {
+    private Dialog showProgressBar(final GameScreen gameScreen) {
         final Table table = new Table();
-        progressBar.setRange(0, myGdxGame.getChessBoard().currentPlayer().getLegalMoves().size());
+        progressBar.setRange(0, gameScreen.getChessBoard().currentPlayer().getLegalMoves().size());
         table.add(progressBar).width(400).padBottom(20).row();
 
         final Dialog dialog = new Dialog("Give me some time to think...", GUI_UTILS.UI_SKIN);
 
-        final TextButton textButton = new TextButton("Ok",GUI_UTILS.UI_SKIN);
+        final TextButton textButton = new TextButton("Remove Progress Bar",GUI_UTILS.UI_SKIN);
         textButton.addListener(new ClickListener() {
             @Override
             public void clicked(final InputEvent event, final float x, final float y) {
@@ -49,40 +48,48 @@ public final class ArtificialIntelligence{
             }
         });
 
-        table.add(textButton).align(Align.bottomLeft);
+        table.add(textButton);
 
         dialog.add(table);
-        dialog.show(myGdxGame.getStage());
+        dialog.show(gameScreen.getStage());
 
         return dialog;
     }
 
-    public void startAI(final MyGdxGame myGdxGame) {
-        final Dialog dialog = this.showProgressBar(myGdxGame);
+    public void startAI(final GameScreen gameScreen) {
+        final Dialog dialog;
+        if (gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer()) &&
+            gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer().getOpponent()) &&
+            this.level.getSelected() < 3) {
+            dialog = null;
+        } else {
+            dialog = this.showProgressBar(gameScreen);
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 miniMax = new MiniMax(level.getSelected());
-                final Move bestMove = miniMax.execute(myGdxGame.getChessBoard());
+                final Move bestMove = miniMax.execute(gameScreen.getChessBoard());
                 progressBar.setValue(miniMax.getMoveCount());
                 if (!miniMax.getTerminateProcess()) {
                     Gdx.app.postRunnable(new Runnable() {
                         @Override
                         public void run() {
-                            if (myGdxGame.getGameBoard().isHighlightPreviousMove()) {
-                                myGdxGame.getGameBoard().setAiMove(bestMove);
+                            if (gameScreen.getGameBoard().isHighlightPreviousMove()) {
+                                gameScreen.getGameBoard().setAiMove(bestMove);
                             }
-                            myGdxGame.getGameBoard().setHumanMove(null);
-                            myGdxGame.updateChessBoard(myGdxGame.getChessBoard().currentPlayer().makeMove(bestMove).getLatestBoard());
-                            myGdxGame.getMoveHistory().getMoveLog().addMove(bestMove);
-                            myGdxGame.getMoveHistory().updateMoveHistory();
-                            myGdxGame.getGameBoard().drawBoard(myGdxGame, myGdxGame.getChessBoard(), myGdxGame.getDisplayOnlyBoard());
-                            myGdxGame.getGameBoard().fireGameSetupPropertyChangeSupport();
+                            gameScreen.getGameBoard().setHumanMove(null);
+                            gameScreen.updateChessBoard(gameScreen.getChessBoard().currentPlayer().makeMove(bestMove).getLatestBoard());
+                            gameScreen.getMoveHistory().getMoveLog().addMove(bestMove);
+                            gameScreen.getMoveHistory().updateMoveHistory();
+                            gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
+                            gameScreen.getGameBoard().fireGameSetupPropertyChangeSupport();
                         }
                     });
                 }
                 miniMax.setTerminateProcess(false);
-                myGdxGame.getGameBoard().setAIThinking(false);
+                gameScreen.getGameBoard().setAIThinking(false);
+                assert dialog != null;
                 dialog.remove();
             }
         }).start();

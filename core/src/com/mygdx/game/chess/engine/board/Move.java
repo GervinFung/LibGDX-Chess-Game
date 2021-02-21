@@ -10,7 +10,7 @@ import com.mygdx.game.chess.engine.pieces.Pawn;
 import com.mygdx.game.chess.engine.pieces.Piece;
 import com.mygdx.game.chess.engine.pieces.Rook;
 import com.mygdx.game.GUI.board.GUI_UTILS;
-import com.mygdx.game.MyGdxGame;
+import com.mygdx.game.GUI.board.gameScreen.GameScreen;
 
 import java.io.Serializable;
 import java.util.List;
@@ -65,25 +65,19 @@ public abstract class Move implements Serializable {
     public final Board getBoard() {
         return this.board;
     }
-
     public int getCurrentCoordinate() {
         return this.getMovedPiece().getPiecePosition();
     }
-
     public final int getDestinationCoordinate() {
         return this.destinationCoordinate;
     }
-
     public final Piece getMovedPiece() {
         return this.movePiece;
     }
-
     public boolean isAttack() {
         return false;
     }
-
     public boolean isCastlingMove() { return false; }
-
     public Piece getAttackedPiece() {
         return null;
     }
@@ -182,10 +176,7 @@ public abstract class Move implements Serializable {
         public boolean equals(final Object object) { return this == object || object instanceof  PawnMove && super.equals(object); }
 
         @Override
-        public String toString() {
-            return BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
-        }
-
+        public String toString() { return BoardUtils.getPositionAtCoordinate(this.destinationCoordinate); }
     }
 
     public static class PawnAttackMove extends AttackMove {
@@ -199,8 +190,7 @@ public abstract class Move implements Serializable {
 
         @Override
         public String toString() {
-            return BoardUtils.getPositionAtCoordinate(this.movePiece.getPiecePosition()).charAt(0) + "x" +
-                    BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+            return BoardUtils.getPositionAtCoordinate(this.movePiece.getPiecePosition()).charAt(0) + "x" + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
         }
     }
 
@@ -259,12 +249,12 @@ public abstract class Move implements Serializable {
 
         public Move getDecoratedMove() { return this.decoratedMove; }
 
-        public void startLibGDXPromotion(final MyGdxGame myGdxGame) {
+        public void startLibGDXPromotion(final GameScreen gameScreen) {
             final Dialog promoteDialog = new Dialog("Pawn Promotion", GUI_UTILS.UI_SKIN);
             promoteDialog.text("You only have 1 chance to promote your pawn\nChoose wisely");
             promoteDialog.getContentTable().row();
-            promoteDialog.getButtonTable().add(this.pawnPromotionButton(myGdxGame, this.promotedPawn.getPromotionPieces(this.destinationCoordinate), promoteDialog));
-            promoteDialog.show(myGdxGame.getStage());
+            promoteDialog.getButtonTable().add(this.pawnPromotionButton(gameScreen, this.promotedPawn.getPromotionPieces(this.destinationCoordinate), promoteDialog));
+            promoteDialog.show(gameScreen.getStage());
         }
 
         private Board promoteLibGDXPawn(final Board board) {
@@ -288,7 +278,7 @@ public abstract class Move implements Serializable {
             return builder.build();
         }
 
-        private Button[] pawnPromotionButton(final MyGdxGame myGdxGame, final List<Piece> getPromotionPieces, final Dialog promoteDialog) {
+        private Button[] pawnPromotionButton(final GameScreen gameScreen, final List<Piece> getPromotionPieces, final Dialog promoteDialog) {
             final Button[] buttons = new Button[4];
             for (int i = 0; i < 4; i++) {
                 buttons[i] = new Button(new TextureRegionDrawable(GUI_UTILS.GET_PIECE_TEXTURE_REGION(getPromotionPieces.get(i))));
@@ -298,14 +288,14 @@ public abstract class Move implements Serializable {
                     public void clicked(final InputEvent event, final float x, final float y) {
                         PawnPromotion.this.promotedPiece = getPromotionPieces.get(finalI);
                         promoteDialog.remove();
-                        myGdxGame.updateChessBoard(promoteLibGDXPawn(myGdxGame.getChessBoard()));
-                        myGdxGame.getGameBoard().drawBoard(myGdxGame, myGdxGame.getChessBoard(), myGdxGame.getDisplayOnlyBoard());
-                        myGdxGame.getMoveHistory().getMoveLog().addMove(PawnPromotion.this);
-                        myGdxGame.getMoveHistory().updateMoveHistory();
-                        if (!myGdxGame.getGameBoard().isAIPlayer(myGdxGame.getChessBoard().currentPlayer())) {
-                            myGdxGame.getGameBoard().fireGameSetupPropertyChangeSupport();
+                        gameScreen.updateChessBoard(promoteLibGDXPawn(gameScreen.getChessBoard()));
+                        gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
+                        gameScreen.getMoveHistory().getMoveLog().addMove(PawnPromotion.this);
+                        gameScreen.getMoveHistory().updateMoveHistory();
+                        if (gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer())) {
+                            gameScreen.getGameBoard().fireGameSetupPropertyChangeSupport();
                         } else {
-                            myGdxGame.getGameBoard().displayEndGameMessage(myGdxGame.getChessBoard(), myGdxGame.getStage());
+                            gameScreen.getGameBoard().displayEndGameMessage(gameScreen.getChessBoard(), gameScreen.getStage());
                         }
                     }
                 });
@@ -387,21 +377,16 @@ public abstract class Move implements Serializable {
         }
 
         @Override
-        public String toString() {
-            return BoardUtils.getPositionAtCoordinate(destinationCoordinate);
-        }
+        public String toString() { return BoardUtils.getPositionAtCoordinate(destinationCoordinate); }
     }
 
     private static abstract class CastleMove extends Move {
 
         protected final Rook castleRook;
 
-        protected final int castleRookStart;
+        protected final int castleRookStart, castleRookDestination;
 
-        protected final int castleRookDestination;
-
-        public CastleMove(final Board board, final Piece movePiece, final int destinationCoordinate,
-                          final Rook castleRook, final int castleRookStart, final int castleRookDestination) {
+        public CastleMove(final Board board, final Piece movePiece, final int destinationCoordinate, final Rook castleRook, final int castleRookStart, final int castleRookDestination) {
             super(board, movePiece, destinationCoordinate);
             this.castleRook = castleRook;
             this.castleRookStart = castleRookStart;
@@ -459,8 +444,7 @@ public abstract class Move implements Serializable {
 
     public static final class KingSideCastleMove extends CastleMove {
 
-        public KingSideCastleMove(final Board board, final Piece movePiece, final int destinationCoordinate,
-                                  final Rook castleRook, final int castleRookStart, final int castleRookDestination) {
+        public KingSideCastleMove(final Board board, final Piece movePiece, final int destinationCoordinate, final Rook castleRook, final int castleRookStart, final int castleRookDestination) {
             super(board, movePiece, destinationCoordinate, castleRook, castleRookStart, castleRookDestination);
         }
 
@@ -475,8 +459,7 @@ public abstract class Move implements Serializable {
 
     public static final class QueenSideCastleMove extends CastleMove {
 
-        public QueenSideCastleMove(final Board board, final Piece movePiece, final int destinationCoordinate,
-                                   final Rook castleRook, final int castleRookStart, final int castleRookDestination) {
+        public QueenSideCastleMove(final Board board, final Piece movePiece, final int destinationCoordinate, final Rook castleRook, final int castleRookStart, final int castleRookDestination) {
             super(board, movePiece, destinationCoordinate, castleRook, castleRookStart, castleRookDestination);
         }
 

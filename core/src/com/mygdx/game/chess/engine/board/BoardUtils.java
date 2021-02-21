@@ -29,10 +29,15 @@ public final class BoardUtils {
     public final static List<String> ALGEBRAIC_NOTATION = initializeAlgebraicNotation();
     public final static Map<String, Integer> POSITION_TO_COORDINATE = initializePositionToCoordinateMap();
 
-    public final static int NUM_TILES = 64;
-    public final static int NUM_TILES_PER_ROW = 8;
-
+    public final static int NUM_TILES = 64, NUM_TILES_PER_ROW = 8;
     public final static int DEFAULT_TIMER_MINUTE = 5, DEFAULT_TIMER_SECOND = 0, DEFAULT_TIMER_MILLISECOND = 0;
+
+    //Method
+    public static boolean isValidTileCoordinate(final int coordinate) { return coordinate >= 0 && coordinate < NUM_TILES; }
+    public static String getPositionAtCoordinate(final int destinationCoordinate) { return ALGEBRAIC_NOTATION.get(destinationCoordinate); }
+    public static int getCoordinateAtPosition(final String destinationPosition) { return POSITION_TO_COORDINATE.get(destinationPosition); }
+    public static boolean kingThreat(final Move move) { return move.getBoard().currentPlayer().makeMove(move).getLatestBoard().currentPlayer().isInCheck(); }
+    public static boolean isEndGameScenario(final Board board) { return board.currentPlayer().isInCheckmate() || board.currentPlayer().isInStalemate(); }
 
     private static List<String> initializeAlgebraicNotation() {
         return Collections.unmodifiableList(Arrays.asList(
@@ -72,12 +77,6 @@ public final class BoardUtils {
         return Collections.unmodifiableList(rowList);
     }
 
-    public static boolean isValidTileCoordinate(final int coordinate) { return coordinate >= 0 && coordinate < NUM_TILES; }
-
-    public static String getPositionAtCoordinate(final int destinationCoordinate) { return ALGEBRAIC_NOTATION.get(destinationCoordinate); }
-
-    public static int getCoordinateAtPosition(final String destinationPosition) { return POSITION_TO_COORDINATE.get(destinationPosition); }
-
     public static int mostValuableVictimLeastValuableAggressor(final Move move) {
         final Piece movingPiece = move.getMovedPiece();
         if(move.isAttack()) {
@@ -98,10 +97,6 @@ public final class BoardUtils {
         }
         return Collections.unmodifiableList(moveHistory);
     }
-
-    public static boolean kingThreat(final Move move) { return move.getBoard().currentPlayer().makeMove(move).getLatestBoard().currentPlayer().isInCheck(); }
-
-    public static boolean isEndGameScenario(final Board board) { return board.currentPlayer().isInCheckmate() || board.currentPlayer().isInStalemate(); }
 
     private static Map<String, Integer> initializePositionToCoordinateMap() {
         final Map<String, Integer> positionToCoordinate = new HashMap<>(64);

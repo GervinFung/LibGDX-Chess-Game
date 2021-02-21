@@ -28,7 +28,7 @@ No. | Features
 --- | ----
 1.| Restart new game
 2.| Save game/ Load saved game
-3.| Exit game
+3.| Exit to menu screen
 4.| Highlight legal moves
 5.| Show move history
 6.| Choose AI level from 1 to 10
@@ -39,5 +39,11 @@ No. | Features
 11.| Choose 6 different board colors
 12.| Pause timer
 13.| Show AI thinking progress bar
+14.| Show menu and about screen
 
+**Welcome Screen**
+![Chess sample](welcome.png)
+**About Screen**
+![Chess sample](about.png)
+**Game Screen**
 ![Chess sample](chess.png)

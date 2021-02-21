@@ -39,9 +39,10 @@ public final class MoveHistory extends Table {
 
         this.table = new Table(GUI_UTILS.UI_SKIN);
         this.table.align(Align.topLeft);
-
         this.add(this.whiteTakenPiece).size(SIZE, 75).row();
-        this.add(new ScrollPane(this.table)).size(SIZE, 450).row();
+        final ScrollPane scrollPane = new ScrollPane(this.table);
+        scrollPane.setScrollbarsVisible(true);
+        this.add(scrollPane).size(SIZE, 450).row();
         this.add(this.blackTakenPiece).size(SIZE, 75);
     }
 
