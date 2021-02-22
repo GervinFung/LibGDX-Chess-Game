@@ -95,7 +95,6 @@ public final class GameScreen implements Screen {
 		final Stack stack = new Stack();
 		stack.add(this.displayOnlyBoard);
 		stack.add(this.gameBoard);
-
 		return stack;
 	}
 
@@ -115,7 +114,7 @@ public final class GameScreen implements Screen {
 	@Override
 	public void render (final float delta) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		this.stage.act(Gdx.graphics.getDeltaTime());
+		this.stage.act(delta);
 		this.gameMenu.detectKeyPressed(this);
 		this.gamePreference.detectUndoMoveKeyPressed(this);
 		if (this.getGameBoard().isAIThinking()) {

@@ -53,6 +53,9 @@ public final class FenUtilities {
         final String[] coordinates = dataPartitioned[0].split(" ");
         moveLog.clear();
         Board board = createStandardBoardForMoveHistory(dataPartitioned[1].split(":"), dataPartitioned[2].split(":"));
+        if (dataPartitioned[0].isEmpty()) {
+            return board;
+        }
         for (int i = 0; i < coordinates.length; i++) {
             final Move move = Move.MoveFactory.createMoveFromMoveHistory(board, Integer.parseInt(coordinates[i]), Integer.parseInt(coordinates[++i]));
             moveLog.addMove(move);

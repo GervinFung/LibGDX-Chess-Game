@@ -3,13 +3,12 @@ package com.mygdx.game.GUI.board;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.game.GUI.board.gameScreen.About;
 import com.mygdx.game.GUI.board.gameScreen.GameScreen;
 import com.mygdx.game.GUI.board.gameScreen.WelcomeScreen;
 import com.mygdx.game.chess.engine.board.Board;
 
-public final class ChessGame extends Game implements Disposable {
+public final class ChessGame extends Game {
 
     private GameScreen gameScreen;
     private WelcomeScreen welcomeScreen;

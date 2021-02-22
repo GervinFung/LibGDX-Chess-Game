@@ -35,9 +35,7 @@ public final class GameMenu extends TextButton {
             }});
     }
     
-    public void detectKeyPressed(final GameScreen gameScreen) {
-        this.gameMenuDialog.detectKeyPressed(gameScreen);
-    }
+    public void detectKeyPressed(final GameScreen gameScreen) { this.gameMenuDialog.detectKeyPressed(gameScreen); }
 
     private static final class GameMenuDialog extends Dialog {
 
@@ -94,10 +92,12 @@ public final class GameMenu extends TextButton {
 
         @Override
         public void detectKeyBoard(final GameScreen gameScreen) {
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.N)
-                || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.N)) {
-                gameScreen.getGameTimerPanel().continueTimer(false);
-                newGameDialog.show(gameScreen.getStage());
+            if ((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.N))
+                    || (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.N))) {
+                if (gameScreen.getGameTimerPanel().isTimerContinue()) {
+                    gameScreen.getGameTimerPanel().continueTimer(false);
+                    newGameDialog.show(gameScreen.getStage());
+                }
             }
         }
 
@@ -117,7 +117,6 @@ public final class GameMenu extends TextButton {
                         GUI_UTILS.MOVE_LOG_PREF.putString(GUI_UTILS.MOVE_LOG_STATE, FenUtilities.getGameData(gameScreen.getMoveHistory().getMoveLog(), gameScreen.getChessBoard()));
                         GUI_UTILS.MOVE_LOG_PREF.flush();
                     }
-                    this.remove();
                 }
             }.button("Yes", true)
                     .button("No", false)
@@ -229,10 +228,12 @@ public final class GameMenu extends TextButton {
 
         @Override
         public void detectKeyBoard(final GameScreen gameScreen) {
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.X)
-                    || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.X)) {
-                gameScreen.getGameTimerPanel().continueTimer(false);
-                exitGameDialog.show(gameScreen.getStage());
+            if ((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.X))
+                    || (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.X))) {
+                if (gameScreen.getGameTimerPanel().isTimerContinue()) {
+                    gameScreen.getGameTimerPanel().continueTimer(false);
+                    exitGameDialog.show(gameScreen.getStage());
+                }
             }
         }
 
@@ -281,10 +282,12 @@ public final class GameMenu extends TextButton {
 
         @Override
         public void detectKeyBoard(final GameScreen gameScreen) {
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S)
-                    || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.S)) {
-                gameScreen.getGameTimerPanel().continueTimer(false);
-                saveGameDialog.show(gameScreen.getStage());
+            if ((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.S))
+                    || (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.S))) {
+                if (gameScreen.getGameTimerPanel().isTimerContinue()) {
+                    gameScreen.getGameTimerPanel().continueTimer(false);
+                    saveGameDialog.show(gameScreen.getStage());
+                }
             }
         }
 
@@ -313,10 +316,9 @@ public final class GameMenu extends TextButton {
                             }
                         }.text(gameSavedLabel).button("Ok").show(gameScreen.getStage());
                     }
-                    this.remove();
                 }
             }.button("Yes", true)
-                    .button("No", false)
+                    .button("No")
                     .text(label);
         }
     }
@@ -341,10 +343,12 @@ public final class GameMenu extends TextButton {
 
         @Override
         public void detectKeyBoard(final GameScreen gameScreen) {
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L)
-                    || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.L)) {
-                gameScreen.getGameTimerPanel().continueTimer(false);
-                loadGameDialog.show(gameScreen.getStage());
+            if ((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.L))
+                    || (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.L))) {
+                if (gameScreen.getGameTimerPanel().isTimerContinue()) {
+                    gameScreen.getGameTimerPanel().continueTimer(false);
+                    loadGameDialog.show(gameScreen.getStage());
+                }
             }
         }
 
@@ -371,7 +375,15 @@ public final class GameMenu extends TextButton {
                         gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
                         gameScreen.getGameBoard().setGameEnd(false);
                         gameScreen.getGameTimerPanel().resetTimer(gameScreen.getChessBoard().whitePlayer(), gameScreen.getChessBoard().blackPlayer());
-                        gameScreen.getGameTimerPanel().continueTimer(true);
+                        final Label gameLoadedLabel = new Label("Game Loaded!", GUI_UTILS.UI_SKIN);
+                        gameLoadedLabel.setColor(Color.BLACK);
+                        new Dialog("Game Loaded Message", GUI_UTILS.UI_SKIN) {
+                            @Override
+                            protected void result(final Object object) {
+                                this.remove();
+                                gameScreen.getGameTimerPanel().continueTimer(true);
+                            }
+                        }.text(gameLoadedLabel).button("Ok").show(gameScreen.getStage());
                     } catch (final RuntimeException e) {
                         e.printStackTrace();
                         final Label label = new Label("No game to load", GUI_UTILS.UI_SKIN);

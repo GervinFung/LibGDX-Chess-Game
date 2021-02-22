@@ -9,6 +9,7 @@ The workspace contains two folders by default, where:
 
 - `core`: the folder to maintain sources, stores the code for chess engine logic and UI design
 - `asset/resource`: the folder that store textures, skin and font for the UI
+- `platformExe`: the folder that contains each platform's executable file
 
 ## To play the Game
 
@@ -21,8 +22,6 @@ No. | Steps
 5.| User can reset timer if they wish to start a new game
 
 ## Game Features
-
-NOTE: **if AI move is undo, reconfigure the Setup AI again**
 
 No. | Features
 --- | ----

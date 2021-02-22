@@ -97,7 +97,7 @@ public final class WelcomeScreen implements Screen {
     @Override
     public void render(final float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        this.stage.act(Gdx.graphics.getDeltaTime());
+        this.stage.act(delta);
         this.stage.getBatch().begin();
         this.stage.getBatch().draw(GUI_UTILS.BACKGROUND, 0, 0);
 

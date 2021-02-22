@@ -80,6 +80,7 @@ public final class GameBoard extends Table {
                         artificialIntelligence.startAI(gameScreen);
                     }
                 }
+                displayEndGameMessage(gameScreen.getChessBoard(), gameScreen.getStage());
             }
         };
         this.gameSetupPropertyChangeSupport = new PropertyChangeSupport(gameSetupPropertyChangeListener);

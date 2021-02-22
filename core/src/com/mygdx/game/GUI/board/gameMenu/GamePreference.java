@@ -120,6 +120,7 @@ public final class GamePreference extends TextButton {
 
         private UndoButton(final GameScreen gameScreen, final GamePreferenceDialog gamePreferenceDialog) {
             super("Undo Move (CTRL + Z)", GUI_UTILS.UI_SKIN);
+
             this.addListener(new ClickListener() {
                 @Override
                 public void clicked(final InputEvent event, final float x, final float y) {
@@ -133,13 +134,13 @@ public final class GamePreference extends TextButton {
         }
 
         private void detectUndoMoveKeyPressed(final GameScreen gameScreen) {
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.Z)
-                    || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.Z)) {
-                gameScreen.getGameTimerPanel().continueTimer(false);
+            if ((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyJustPressed(Input.Keys.Z))
+                    || (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT) && Gdx.input.isKeyPressed(Input.Keys.Z))
+                    || (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyJustPressed(Input.Keys.Z))
+                    || (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.Z))) {
                 if (gameScreen.getMoveHistory().getMoveLog().size() > 0 && !gameScreen.getGameBoard().isGameEnd()) {
-                    undoPlayerMove(gameScreen);
+                    this.undoPlayerMove(gameScreen);
                 }
-                gameScreen.getGameTimerPanel().continueTimer(true);
             }
         }
 
@@ -170,7 +171,6 @@ public final class GamePreference extends TextButton {
             gameScreen.getMoveHistory().updateMoveHistory();
         }
     }
-
 
     private static final class BoardColorButton extends TextButton {
         private BoardColorButton(final GameScreen gameScreen, final GamePreferenceDialog gamePreferenceDialog) {
