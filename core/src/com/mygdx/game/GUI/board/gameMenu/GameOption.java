@@ -45,6 +45,7 @@ public final class GameOption extends TextButton {
                 @Override
                 public void clicked(final InputEvent event, final float x, final float y) {
                     gameOptionDialog.remove();
+                    gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
                     gameScreen.getGameTimerPanel().continueTimer(true);
                 }
             });

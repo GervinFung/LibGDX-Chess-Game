@@ -43,9 +43,7 @@ public final class ArtificialIntelligence{
         final TextButton textButton = new TextButton("Remove Progress Bar",GUI_UTILS.UI_SKIN);
         textButton.addListener(new ClickListener() {
             @Override
-            public void clicked(final InputEvent event, final float x, final float y) {
-                dialog.remove();
-            }
+            public void clicked(final InputEvent event, final float x, final float y) { dialog.remove(); }
         });
 
         table.add(textButton);
@@ -70,27 +68,26 @@ public final class ArtificialIntelligence{
             public void run() {
                 miniMax = new MiniMax(level.getSelected());
                 final Move bestMove = miniMax.execute(gameScreen.getChessBoard());
+                gameScreen.getGameBoard().setAiMove(bestMove);
+                gameScreen.getGameBoard().setHumanMove(null);
+                gameScreen.updateChessBoard(gameScreen.getChessBoard().currentPlayer().makeMove(bestMove).getLatestBoard());
                 progressBar.setValue(miniMax.getMoveCount());
                 if (!miniMax.getTerminateProcess()) {
                     Gdx.app.postRunnable(new Runnable() {
                         @Override
                         public void run() {
-                            if (gameScreen.getGameBoard().isHighlightPreviousMove()) {
-                                gameScreen.getGameBoard().setAiMove(bestMove);
-                            }
-                            gameScreen.getGameBoard().setHumanMove(null);
-                            gameScreen.updateChessBoard(gameScreen.getChessBoard().currentPlayer().makeMove(bestMove).getLatestBoard());
                             gameScreen.getMoveHistory().getMoveLog().addMove(bestMove);
                             gameScreen.getMoveHistory().updateMoveHistory();
                             gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
                             gameScreen.getGameBoard().fireGameSetupPropertyChangeSupport();
+                            if (dialog != null) {
+                                dialog.remove();
+                            }
                         }
                     });
                 }
                 miniMax.setTerminateProcess(false);
                 gameScreen.getGameBoard().setAIThinking(false);
-                assert dialog != null;
-                dialog.remove();
             }
         }).start();
     }

@@ -125,7 +125,7 @@ public final class GameMenu extends TextButton {
 
         private static final class SetupTimer extends Dialog{
 
-            private final SelectBox<NewGameButton.SetupTimer.TIMER_MINUTE> timer;
+            private final SelectBox<TIMER_MINUTE> timer;
             private int minute;
 
             private enum TIMER_MINUTE {
@@ -159,6 +159,11 @@ public final class GameMenu extends TextButton {
                     int getMinute() { return 60; }
                     @Override
                     public String toString() { return "60 minutes"; }
+                }, NO_TIMER {
+                    @Override
+                    int getMinute() { return -1; }
+                    @Override
+                    public String toString() { return "No Timer"; }
                 };
                 abstract int getMinute();
             }
@@ -167,7 +172,7 @@ public final class GameMenu extends TextButton {
                 super("Setup Timer", GUI_UTILS.UI_SKIN);
                 final Table table = new Table();
                 this.timer = new SelectBox<>(GUI_UTILS.UI_SKIN);
-                this.timer.setItems(NewGameButton.SetupTimer.TIMER_MINUTE.FIVE, NewGameButton.SetupTimer.TIMER_MINUTE.TEN, NewGameButton.SetupTimer.TIMER_MINUTE.FIFTEEN, NewGameButton.SetupTimer.TIMER_MINUTE.THIRTY, NewGameButton.SetupTimer.TIMER_MINUTE.FORTY_FIVE, NewGameButton.SetupTimer.TIMER_MINUTE.SIXTY);
+                this.timer.setItems(TIMER_MINUTE.FIVE, TIMER_MINUTE.TEN, TIMER_MINUTE.FIFTEEN, TIMER_MINUTE.THIRTY, TIMER_MINUTE.FORTY_FIVE, TIMER_MINUTE.SIXTY, TIMER_MINUTE.NO_TIMER);
                 table.add(this.timer).padBottom(20).row();
                 this.minute = BoardUtils.DEFAULT_TIMER_MINUTE;
                 table.add(new SetupButton(gameScreen,this, "Ok")).align(Align.bottomLeft);
@@ -199,6 +204,7 @@ public final class GameMenu extends TextButton {
             private void restartGame(final GameScreen gameScreen, final int minute) {
                 gameScreen.updateChessBoard(Board.createStandardBoard(minute, BoardUtils.DEFAULT_TIMER_SECOND, BoardUtils.DEFAULT_TIMER_MILLISECOND));
                 gameScreen.getMoveHistory().getMoveLog().clear();
+                gameScreen.getGameBoard().setHumanPiece(null);
                 gameScreen.getGameBoard().setAiMove(null);
                 gameScreen.getGameBoard().setHumanMove(null);
                 gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());

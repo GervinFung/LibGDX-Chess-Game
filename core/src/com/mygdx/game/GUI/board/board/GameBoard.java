@@ -39,8 +39,8 @@ public final class GameBoard extends Table {
     public void setAiMove(final Move aiMove) { this.aiMove = aiMove; }
     public void setGameEnd(final boolean gameEnd) { this.gameEnd = gameEnd; }
     public void changeBoardDirection() { this.board_direction = this.board_direction.opposite(); }
-    public void changeWhitePlayerType() { this.whitePlayerType = this.whitePlayerType.opposite(); }
-    public void changeBlackPlayerType() { this.blackPlayerType = this.blackPlayerType.opposite(); }
+    public void changeWhitePlayerType(final boolean changeAI) { this.whitePlayerType = changeAI ? PLAYER_TYPE.COMPUTER : PLAYER_TYPE.HUMAN; }
+    public void changeBlackPlayerType(final boolean changeAI) { this.blackPlayerType = changeAI ? PLAYER_TYPE.COMPUTER : PLAYER_TYPE.HUMAN; }
     public void setAIThinking(final boolean AIThinking) { this.AIThinking = AIThinking; }
     public void setHighlightMove(final boolean highlightMove) { this.highlightMove = highlightMove; }
     public void setHighlightPreviousMove(final boolean highlightPreviousMove) { this.highlightPreviousMove = highlightPreviousMove; }
@@ -149,16 +149,7 @@ public final class GameBoard extends Table {
         abstract void drawBoard(final GameScreen gameScreen, final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard);
     }
 
-    private enum PLAYER_TYPE {
-        HUMAN {
-            @Override
-            PLAYER_TYPE opposite() { return COMPUTER; }
-        }, COMPUTER {
-            @Override
-            PLAYER_TYPE opposite() { return HUMAN; }
-        };
-        abstract PLAYER_TYPE opposite();
-    }
+    private enum PLAYER_TYPE {HUMAN, COMPUTER}
 
     public boolean isAIPlayer(final Player player) {
         if(player.getLeague() == League.WHITE) {

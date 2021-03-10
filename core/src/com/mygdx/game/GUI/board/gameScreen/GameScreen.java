@@ -44,8 +44,7 @@ public final class GameScreen implements Screen {
 		}, LOAD_GAME {
 			@Override
 			public Board getBoard(final GameScreen gameScreen) {
-				final String data = GUI_UTILS.MOVE_LOG_PREF.getString(GUI_UTILS.MOVE_LOG_STATE);
-				return FenUtilities.createGameFromSavedData(data,  gameScreen.getMoveHistory().getMoveLog());
+				return FenUtilities.createGameFromSavedData(GUI_UTILS.MOVE_LOG_PREF.getString(GUI_UTILS.MOVE_LOG_STATE),  gameScreen.getMoveHistory().getMoveLog());
 			}
 		};
 		public abstract Board getBoard(final GameScreen gameScreen);
@@ -120,7 +119,7 @@ public final class GameScreen implements Screen {
 		if (this.getGameBoard().isAIThinking()) {
 			this.getGameBoard().getArtificialIntelligence().getProgressBar().setValue(this.getGameBoard().getArtificialIntelligence().getMoveCount());
 		}
-		if (this.gameTimerPanel.isTimerContinue() && !this.gameTimerPanel.isPauseTimerOption()) {
+		if (!this.gameTimerPanel.isNoTimer() && this.gameTimerPanel.isTimerContinue() && !this.gameTimerPanel.isPauseTimerOption()) {
 			this.gameTimerPanel.update(this);
 			if (this.gameBoard.isAIPlayer(this.chessBoard.currentPlayer()) && this.chessBoard.currentPlayer().isTimeOut()) {
 				this.gameBoard.getArtificialIntelligence().setStopAI(true);

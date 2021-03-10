@@ -15,7 +15,7 @@ public final class TimerPanel extends Table {
     public final static int SIZE = GUI_UTILS.GAME_BOARD_SR_SIZE / 2;
 
     private final PlayerTimerTable whitePlayerTimerTable, blackPlayerTimerTable;
-    private boolean continueTimer, pauseTimerOption;
+    private boolean continueTimer, pauseTimerOption, noTimer;
     private TIMER_PANEL_DIRECTION timer_panel_direction;
 
     private enum TIMER_PANEL_DIRECTION {
@@ -57,6 +57,7 @@ public final class TimerPanel extends Table {
         this.whitePlayerTimerTable = new PlayerTimerTable(Color.WHITE, Color.BLACK, "White Player");
         this.continueTimer = true;
         this.pauseTimerOption = false;
+        this.noTimer = false;
         this.blackPlayerTimerTable = new PlayerTimerTable(Color.BLACK, Color.WHITE, "Black Player");
         this.timer_panel_direction = TIMER_PANEL_DIRECTION.NORMAL;
         this.add(this.blackPlayerTimerTable).size(SIZE).row();
@@ -70,6 +71,7 @@ public final class TimerPanel extends Table {
     //getter
     public boolean isPauseTimerOption() { return this.pauseTimerOption; }
     public boolean isTimerContinue() { return this.continueTimer; }
+    public boolean isNoTimer() { return this.noTimer; }
 
     public void changeTimerPanelDirection() {
         this.timer_panel_direction = this.timer_panel_direction.getOpposite();
@@ -78,6 +80,7 @@ public final class TimerPanel extends Table {
     }
 
     public void resetTimer(final Player whitePlayer, final Player blackPlayer) {
+        this.noTimer = whitePlayer.isNoTimer() && blackPlayer.isNoTimer();
         this.whitePlayerTimerTable.resetTimer(whitePlayer);
         this.blackPlayerTimerTable.resetTimer(blackPlayer);
     }
@@ -122,7 +125,11 @@ public final class TimerPanel extends Table {
         }
 
         private void resetTimer(final Player player) {
-            this.timerLabel.setText(this.getTimeFormat(player.getMinute(), player.getSecond(), player.getMillisecond()));
+            if (!player.isNoTimer()) {
+                this.timerLabel.setText(this.getTimeFormat(player.getMinute(), player.getSecond(), player.getMillisecond()));
+            } else {
+                this.timerLabel.setText("No Timer");
+            }
         }
     }
 }

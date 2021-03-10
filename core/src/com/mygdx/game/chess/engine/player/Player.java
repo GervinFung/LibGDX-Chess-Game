@@ -24,6 +24,7 @@ public abstract class Player implements Serializable {
     protected final King playerKing;
     protected final Collection<Move> legalMoves;
     private final boolean isInCheck;
+    private final boolean noTimer;
     private int minute, second, millisecond;
 
     public Player(final Board board, final Collection<Move> legalMoves, final Collection<Move> opponentLegalMoves, final int minute, final int second, final int millisecond) {
@@ -37,7 +38,10 @@ public abstract class Player implements Serializable {
         this.minute = minute;
         this.second = second;
         this.millisecond = millisecond;
+        this.noTimer = minute == -1;
     }
+
+    public final boolean isNoTimer() { return this.noTimer; }
 
     public final void countDown() {
         if (this.millisecond == 0) {
