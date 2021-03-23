@@ -1,13 +1,9 @@
 package com.mygdx.game.chess.engine.board;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MoveLog implements Serializable {
-
-    //default serialVersion id
-    private static final long serialVersionUID = 3L;
+public final class MoveLog {
 
     private final List<Move> moves;
 

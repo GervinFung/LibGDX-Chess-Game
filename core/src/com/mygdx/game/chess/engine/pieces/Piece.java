@@ -5,15 +5,11 @@ import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.MoveTransition;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import static com.mygdx.game.chess.engine.board.Move.*;
 
-public abstract class Piece implements Serializable {
-
-    //default serialVersion id
-    private static final long serialVersionUID = 5L;
+public abstract class Piece {
 
     protected final PieceType pieceType;
     protected final int piecePosition;

@@ -2,12 +2,7 @@ package com.mygdx.game.chess.engine.board;
 
 import com.mygdx.game.chess.engine.pieces.Piece;
 
-import java.io.Serializable;
-
-public abstract class Tile implements Serializable {
-
-    //default serialVersion id
-    private static final long serialVersionUID = 4L;
+public abstract class Tile {
 
     protected final int tileCoordinate;
 

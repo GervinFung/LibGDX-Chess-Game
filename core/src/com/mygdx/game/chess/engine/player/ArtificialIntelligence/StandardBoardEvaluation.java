@@ -90,9 +90,7 @@ public final class StandardBoardEvaluation {
             0,  0,  0,  0,  0,  0,  0,  0
     };
 
-    public int evaluate(final Board board, final int depth) {
-        return - scorePlayer(board.blackPlayer(), depth) + scorePlayer(board.whitePlayer(), depth);
-    }
+    public int evaluate(final Board board, final int depth) { return - scorePlayer(board.blackPlayer(), depth) + scorePlayer(board.whitePlayer(), depth); }
 
     private static int scorePlayer(final Player player, final int depth) {
         return mobility(player) +

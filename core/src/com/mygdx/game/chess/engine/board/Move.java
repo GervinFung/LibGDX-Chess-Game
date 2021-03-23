@@ -1,24 +1,10 @@
 package com.mygdx.game.chess.engine.board;
 
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-
 import com.mygdx.game.chess.engine.pieces.Pawn;
 import com.mygdx.game.chess.engine.pieces.Piece;
 import com.mygdx.game.chess.engine.pieces.Rook;
-import com.mygdx.game.GUI.board.GUI_UTILS;
-import com.mygdx.game.GUI.board.gameScreen.GameScreen;
 
-import java.io.Serializable;
-import java.util.List;
-
-public abstract class Move implements Serializable {
-
-    //default serialVersion id
-    private static final long serialVersionUID = 2L;
+public abstract class Move {
 
     protected final Board board;
     protected final Piece movePiece;
@@ -77,6 +63,7 @@ public abstract class Move implements Serializable {
     public boolean isAttack() {
         return false;
     }
+    public boolean isPromotionMove() { return false; }
     public boolean isCastlingMove() { return false; }
     public Piece getAttackedPiece() {
         return null;
@@ -131,13 +118,9 @@ public abstract class Move implements Serializable {
 
         @Override
         public boolean equals(final Object object) {
-            if (this == object) {
-                return true;
-            }
+            if (this == object) { return true; }
 
-            if (!(object instanceof AttackMove)) {
-                return false;
-            }
+            if (!(object instanceof AttackMove)) { return false; }
 
             final AttackMove otherAttackMove = (AttackMove)object;
             return super.equals(otherAttackMove) && getAttackedPiece().equals(otherAttackMove.getAttackedPiece());
@@ -247,62 +230,14 @@ public abstract class Move implements Serializable {
             this.MinimaxPromotionPiece = MinimaxPromotionPiece;
         }
 
+        public void setPromotedPiece(final Piece piece) { this.promotedPiece = piece; }
+
         public Move getDecoratedMove() { return this.decoratedMove; }
+        public Piece getPromotedPiece() { return this.promotedPiece; }
+        public Pawn getPromotedPawn() { return this.promotedPawn; }
 
-        public void startLibGDXPromotion(final GameScreen gameScreen) {
-            final Dialog promoteDialog = new Dialog("Pawn Promotion", GUI_UTILS.UI_SKIN);
-            promoteDialog.text("You only have 1 chance to promote your pawn\nChoose wisely");
-            promoteDialog.getContentTable().row();
-            promoteDialog.getButtonTable().add(this.pawnPromotionButton(gameScreen, this.promotedPawn.getPromotionPieces(this.destinationCoordinate), promoteDialog));
-            promoteDialog.show(gameScreen.getStage());
-        }
-
-        private Board promoteLibGDXPawn(final Board board) {
-            //promotion take a move, which the move flips player turn after executed, so this should not flip again
-            final Board.Builder builder = new Board.Builder(this.board.getMoveCount() + 1, board.currentPlayer().getLeague(), null)
-                    .updateWhiteTimer(this.board.whitePlayer().getMinute(), this.board.whitePlayer().getSecond(), this.board.whitePlayer().getMillisecond())
-                    .updateBlackTimer(this.board.blackPlayer().getMinute(), this.board.blackPlayer().getSecond(), this.board.blackPlayer().getMillisecond());
-
-            for (final Piece piece : this.board.currentPlayer().getActivePieces()) {
-                if (!this.promotedPawn.equals(piece)) {
-                    builder.setPiece(piece);
-                }
-            }
-
-            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces()) {
-                builder.setPiece(piece);
-            }
-
-            builder.setPiece(this.promotedPiece.movedPiece(this));
-            builder.setTransitionMove(this);
-            return builder.build();
-        }
-
-        private Button[] pawnPromotionButton(final GameScreen gameScreen, final List<Piece> getPromotionPieces, final Dialog promoteDialog) {
-            final Button[] buttons = new Button[4];
-            for (int i = 0; i < 4; i++) {
-                buttons[i] = new Button(new TextureRegionDrawable(GUI_UTILS.GET_PIECE_TEXTURE_REGION(getPromotionPieces.get(i))));
-                final int finalI = i;
-                buttons[i].addListener(new ClickListener() {
-                    @Override
-                    public void clicked(final InputEvent event, final float x, final float y) {
-                        PawnPromotion.this.promotedPiece = getPromotionPieces.get(finalI);
-                        promoteDialog.remove();
-                        gameScreen.updateChessBoard(promoteLibGDXPawn(gameScreen.getChessBoard()));
-                        gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
-                        gameScreen.getMoveHistory().getMoveLog().addMove(PawnPromotion.this);
-                        gameScreen.getMoveHistory().updateMoveHistory();
-                        if (gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer())) {
-                            gameScreen.getGameBoard().fireGameSetupPropertyChangeSupport();
-                        } else {
-                            gameScreen.getGameBoard().displayEndGameMessage(gameScreen.getChessBoard(), gameScreen.getStage());
-                        }
-                    }
-                });
-            }
-            return buttons;
-        }
-        
+        @Override
+        public boolean isPromotionMove() { return true; }
 
         @Override
         public Board execute() {

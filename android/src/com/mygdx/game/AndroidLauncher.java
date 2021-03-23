@@ -7,8 +7,8 @@ import android.os.Bundle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.mygdx.game.GUI.board.ChessGame;
-import com.mygdx.game.GUI.board.GUI_UTILS;
+import com.mygdx.game.GUI.gui.ChessGame;
+import com.mygdx.game.GUI.gui.GUI_UTILS;
 import com.mygdx.game.chess.engine.FEN.FenUtilities;
 
 public final class AndroidLauncher extends AndroidApplication {

@@ -12,7 +12,6 @@ import com.mygdx.game.chess.engine.pieces.Piece;
 import com.mygdx.game.chess.engine.pieces.Queen;
 import com.mygdx.game.chess.engine.pieces.Rook;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +21,7 @@ import java.util.Collections;
 
 import static com.mygdx.game.chess.engine.board.Move.MoveFactory;
 
-public final class Board implements Serializable {
-
-    //default serialVersion id
-    private static final long serialVersionUID = 1L;
+public final class Board {
 
     private final List<Tile> gameBoard;
     private final Collection<Piece> whitePieces, blackPieces;

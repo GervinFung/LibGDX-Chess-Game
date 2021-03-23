@@ -9,16 +9,12 @@ import com.mygdx.game.chess.engine.board.Tile;
 import com.mygdx.game.chess.engine.pieces.King;
 import com.mygdx.game.chess.engine.pieces.Piece;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-public abstract class Player implements Serializable {
-
-    //default serialVersion id
-    private static final long serialVersionUID = 6L;
+public abstract class Player {
 
     protected final Board board;
     protected final King playerKing;

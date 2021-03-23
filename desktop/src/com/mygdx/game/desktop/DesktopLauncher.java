@@ -3,7 +3,7 @@ package com.mygdx.game.desktop;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.mygdx.game.GUI.board.ChessGame;
+import com.mygdx.game.GUI.gui.ChessGame;
 
 public final class DesktopLauncher {
 
