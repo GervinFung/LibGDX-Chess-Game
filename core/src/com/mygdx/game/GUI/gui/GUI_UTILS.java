@@ -29,6 +29,7 @@ public final class GUI_UTILS {
     private static String GET_PIECE_REGION(final Piece piece) { return piece.getLeague().toString().substring(0, 1) + piece.toString() ; }
 
     //public
+    public final static int WORLD_WIDTH = 1200, WORLD_HEIGHT = 640;
     public final static int GAME_BOARD_SR_SIZE = 600, TILE_SIZE = 75;
     public final static String MOVE_LOG_STATE = "MOVE_LOG_STATE";
     public final static TextureRegion BACKGROUND = GET_TILE_TEXTURE_REGION("welcome");

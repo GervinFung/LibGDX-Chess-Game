@@ -63,7 +63,7 @@ public final class GameScreen implements Screen {
 
 	public GameScreen(final com.mygdx.game.GUI.gui.ChessGame chessGame) {
 		//init
-		this.stage = new Stage(new FitViewport(1200, 640), new SpriteBatch());
+		this.stage = new Stage(new FitViewport(GUI_UTILS.WORLD_WIDTH, GUI_UTILS.WORLD_HEIGHT), new SpriteBatch());
 		this.chessBoard = Board.createStandardBoard(BoardUtils.DEFAULT_TIMER_MINUTE, BoardUtils.DEFAULT_TIMER_SECOND, BoardUtils.DEFAULT_TIMER_MILLISECOND);
 		this.moveHistory = new MoveHistory();
 		this.gameBoard = new GameBoard(this);

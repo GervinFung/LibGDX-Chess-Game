@@ -22,7 +22,7 @@ public final class WelcomeScreen implements Screen {
     private final Stage stage;
 
     public WelcomeScreen(final ChessGame chessGame) {
-        this.stage = new Stage(new FitViewport(1200, 640), new SpriteBatch());
+        this.stage = new Stage(new FitViewport(GUI_UTILS.WORLD_WIDTH, GUI_UTILS.WORLD_HEIGHT), new SpriteBatch());
 
         Gdx.input.setInputProcessor(this.stage);
         Gdx.graphics.setTitle("LibGDX Simple Parallel Chess 2.0");
@@ -60,7 +60,10 @@ public final class WelcomeScreen implements Screen {
         final TextButton textButton = new TextButton("Exit Game", GUI_UTILS.UI_SKIN);
         textButton.addListener(new ClickListener() {
             @Override
-            public void clicked(final InputEvent event, final float x, final float y) { Gdx.app.exit(); }
+            public void clicked(final InputEvent event, final float x, final float y) {
+                Gdx.app.exit();
+                System.exit(0);
+            }
         });
         return textButton;
     }

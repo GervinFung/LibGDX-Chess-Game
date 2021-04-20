@@ -19,7 +19,7 @@ public final class About implements Screen {
     private final Stage stage;
 
     public About(final ChessGame chessGame) {
-        this.stage = new Stage(new FitViewport(1200, 640), new SpriteBatch());
+        this.stage = new Stage(new FitViewport(GUI_UTILS.WORLD_WIDTH, GUI_UTILS.WORLD_HEIGHT), new SpriteBatch());
         Gdx.input.setInputProcessor(this.stage);
         final Table table = new Table(GUI_UTILS.UI_SKIN);
         table.add("About Game").padBottom(20).row();
