@@ -29,7 +29,7 @@ public final class Queen extends Piece{
 
         for (final int CoordinateOFFSET : MOVE_VECTOR_COORDINATE) {
 
-            int candidateDestinationCoordinate = this.piecePosition;
+            int candidateDestinationCoordinate = super.getPiecePosition();
 
             while (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
 

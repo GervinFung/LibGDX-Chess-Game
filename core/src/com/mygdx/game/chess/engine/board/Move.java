@@ -6,24 +6,22 @@ import com.mygdx.game.chess.engine.pieces.Rook;
 
 public abstract class Move {
 
-    protected final Board board;
-    protected final Piece movePiece;
-    protected final int destinationCoordinate;
-    protected final boolean isFirstMove;
+    private final Board board;
+    private final Piece movePiece;
+    private final int destinationCoordinate;
+    private final boolean isFirstMove;
 
     private Move(final Board board, final Piece movePiece, final int destinationCoordinate) {
         this.board = board;
         this.movePiece = movePiece;
         this.destinationCoordinate = destinationCoordinate;
-        this.isFirstMove = movePiece.isFirstMove();
+        this.isFirstMove = movePiece != null && movePiece.isFirstMove();
     }
 
     private Move(final Board board, final int destinationCoordinate) {
-        this.board = board;
-        this.destinationCoordinate = destinationCoordinate;
-        this.movePiece = null;
-        this.isFirstMove = false;
+        this(board, null, destinationCoordinate);
     }
+
     @Override
     public int hashCode() {
         int result = 17;
@@ -51,18 +49,21 @@ public abstract class Move {
     public final Board getBoard() {
         return this.board;
     }
-    public int getCurrentCoordinate() {
-        return this.getMovedPiece().getPiecePosition();
-    }
     public final int getDestinationCoordinate() {
         return this.destinationCoordinate;
     }
     public final Piece getMovedPiece() {
         return this.movePiece;
     }
+    public final boolean isFirstMove() { return this.isFirstMove; }
+
+    public int getCurrentCoordinate() {
+        return this.getMovedPiece().getPiecePosition();
+    }
     public boolean isAttack() {
         return false;
     }
+
     public boolean isPromotionMove() { return false; }
     public boolean isCastlingMove() { return false; }
     public Piece getAttackedPiece() {
@@ -101,7 +102,7 @@ public abstract class Move {
         public boolean equals(final Object object) { return this == object || object instanceof  MajorMove && super.equals(object); }
 
         @Override
-        public String toString() { return getMovedPiece().getPieceType().toString() + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate); }
+        public String toString() { return getMovedPiece().getPieceType().toString() + BoardUtils.getPositionAtCoordinate(super.getDestinationCoordinate()); }
     }
 
     public static class AttackMove extends Move {
@@ -146,7 +147,7 @@ public abstract class Move {
         public boolean equals(final Object object) { return this == object || object instanceof MajorAttackMove && super.equals(object); }
 
         @Override
-        public String toString() { return getMovedPiece().getPieceType() + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate) + "x" + this.getAttackedPiece(); }
+        public String toString() { return getMovedPiece().getPieceType() + BoardUtils.getPositionAtCoordinate(super.getDestinationCoordinate()) + "x" + this.getAttackedPiece(); }
     }
 
     public static final class PawnMove extends Move {
@@ -159,7 +160,7 @@ public abstract class Move {
         public boolean equals(final Object object) { return this == object || object instanceof  PawnMove && super.equals(object); }
 
         @Override
-        public String toString() { return BoardUtils.getPositionAtCoordinate(this.destinationCoordinate); }
+        public String toString() { return BoardUtils.getPositionAtCoordinate(super.getDestinationCoordinate()); }
     }
 
     public static class PawnAttackMove extends AttackMove {
@@ -173,7 +174,7 @@ public abstract class Move {
 
         @Override
         public String toString() {
-            return BoardUtils.getPositionAtCoordinate(this.movePiece.getPiecePosition()).charAt(0) + "x" + BoardUtils.getPositionAtCoordinate(this.destinationCoordinate);
+            return BoardUtils.getPositionAtCoordinate(super.getMovedPiece().getPiecePosition()).charAt(0) + "x" + BoardUtils.getPositionAtCoordinate(super.getDestinationCoordinate());
         }
     }
 
@@ -188,23 +189,23 @@ public abstract class Move {
 
         @Override
         public Board execute() {
-            final Board.Builder builder = new Board.Builder(this.board.getMoveCount() + 1, this.board.currentPlayer().getOpponent().getLeague(), null)
-                            .updateWhiteTimer(this.board.whitePlayer().getMinute(), this.board.whitePlayer().getSecond(), this.board.whitePlayer().getMillisecond())
-                            .updateBlackTimer(this.board.blackPlayer().getMinute(), this.board.blackPlayer().getSecond(), this.board.blackPlayer().getMillisecond());
+            final Board.Builder builder = new Board.Builder(super.getBoard().getMoveCount() + 1, super.getBoard().currentPlayer().getOpponent().getLeague(), null)
+                            .updateWhiteTimer(super.getBoard().whitePlayer().getMinute(), super.getBoard().whitePlayer().getSecond(), super.getBoard().whitePlayer().getMillisecond())
+                            .updateBlackTimer(super.getBoard().blackPlayer().getMinute(), super.getBoard().blackPlayer().getSecond(), super.getBoard().blackPlayer().getMillisecond());
 
-            for (final Piece piece : this.board.currentPlayer().getActivePieces()) {
-                if (!this.movePiece.equals(piece)) {
+            for (final Piece piece : super.getBoard().currentPlayer().getActivePieces()) {
+                if (!super.getMovedPiece().equals(piece)) {
                     builder.setPiece(piece);
                 }
             }
 
-            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces()) {
+            for (final Piece piece : super.getBoard().currentPlayer().getOpponent().getActivePieces()) {
                 if (!piece.equals(this.getAttackedPiece())) {
                     builder.setPiece(piece);
                 }
             }
 
-            builder.setPiece(this.movePiece.movedPiece(this));
+            builder.setPiece(super.getMovedPiece().movedPiece(this));
             builder.setTransitionMove(this);
 
             return builder.build();
@@ -221,13 +222,13 @@ public abstract class Move {
         private final Move decoratedMove;
         private final Pawn promotedPawn;
         private Piece promotedPiece;
-        private final Piece MinimaxPromotionPiece;
+        private final Piece minimaxPromotionPiece;
 
         public PawnPromotion(final Move decoratedMove, final Piece MinimaxPromotionPiece) {
             super(decoratedMove.getBoard(), decoratedMove.getMovedPiece(), decoratedMove.getDestinationCoordinate());
             this.decoratedMove = decoratedMove;
             this.promotedPawn = (Pawn)decoratedMove.getMovedPiece();
-            this.MinimaxPromotionPiece = MinimaxPromotionPiece;
+            this.minimaxPromotionPiece = MinimaxPromotionPiece;
         }
 
         public void setPromotedPiece(final Piece piece) { this.promotedPiece = piece; }
@@ -243,22 +244,22 @@ public abstract class Move {
         public Board execute() {
 
             final Board pawnMoveBoard = this.decoratedMove.execute();
-            final Board.Builder builder = new Board.Builder(this.board.getMoveCount() + 1, pawnMoveBoard.currentPlayer().getLeague(), null)
-                                            .updateWhiteTimer(this.board.whitePlayer().getMinute(), this.board.whitePlayer().getSecond(), this.board.whitePlayer().getMillisecond())
-                                            .updateBlackTimer(this.board.blackPlayer().getMinute(), this.board.blackPlayer().getSecond(), this.board.blackPlayer().getMillisecond());
+            final Board.Builder builder = new Board.Builder(super.getBoard().getMoveCount() + 1, pawnMoveBoard.currentPlayer().getLeague(), null)
+                                            .updateWhiteTimer(super.getBoard().whitePlayer().getMinute(), super.getBoard().whitePlayer().getSecond(), super.getBoard().whitePlayer().getMillisecond())
+                                            .updateBlackTimer(super.getBoard().blackPlayer().getMinute(), super.getBoard().blackPlayer().getSecond(), super.getBoard().blackPlayer().getMillisecond());
 
-            for (final Piece piece : this.board.currentPlayer().getActivePieces()) {
+            for (final Piece piece : super.getBoard().currentPlayer().getActivePieces()) {
                 if (!this.promotedPawn.equals(piece)) {
                     builder.setPiece(piece);
                 }
             }
 
-            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces()) {
+            for (final Piece piece : super.getBoard().currentPlayer().getOpponent().getActivePieces()) {
                 builder.setPiece(piece);
             }
 
-            this.promotedPiece = this.MinimaxPromotionPiece;
-            builder.setPiece(this.MinimaxPromotionPiece.movedPiece(this));
+            this.promotedPiece = this.minimaxPromotionPiece;
+            builder.setPiece(this.minimaxPromotionPiece.movedPiece(this));
             return builder.build();
         }
 
@@ -273,7 +274,7 @@ public abstract class Move {
         }
 
         @Override
-        public String toString() { return BoardUtils.getPositionAtCoordinate(this.destinationCoordinate) + "=" +this.promotedPiece.toString().charAt(0); }
+        public String toString() { return BoardUtils.getPositionAtCoordinate(super.getDestinationCoordinate()) + "=" +this.promotedPiece.toString().charAt(0); }
 
         @Override
         public int hashCode() { return this.decoratedMove.hashCode() + (31 * this.promotedPawn.hashCode()); }
@@ -290,19 +291,19 @@ public abstract class Move {
 
         @Override
         public Board execute() {
-            final Pawn movedPawn = (Pawn)this.movePiece.movedPiece(this);
+            final Pawn movedPawn = (Pawn)super.getMovedPiece().movedPiece(this);
 
-            final Board.Builder builder = new Board.Builder(this.board.getMoveCount() + 1, this.board.currentPlayer().getOpponent().getLeague(), movedPawn)
-                                        .updateWhiteTimer(this.board.whitePlayer().getMinute(), this.board.whitePlayer().getSecond(), this.board.whitePlayer().getMillisecond())
-                                        .updateBlackTimer(this.board.blackPlayer().getMinute(), this.board.blackPlayer().getSecond(), this.board.blackPlayer().getMillisecond());
+            final Board.Builder builder = new Board.Builder(super.getBoard().getMoveCount() + 1, super.getBoard().currentPlayer().getOpponent().getLeague(), movedPawn)
+                                        .updateWhiteTimer(super.getBoard().whitePlayer().getMinute(), super.getBoard().whitePlayer().getSecond(), super.getBoard().whitePlayer().getMillisecond())
+                                        .updateBlackTimer(super.getBoard().blackPlayer().getMinute(), super.getBoard().blackPlayer().getSecond(), super.getBoard().blackPlayer().getMillisecond());
 
-            for (final Piece piece : this.board.currentPlayer().getActivePieces()) {
-                if (!this.movePiece.equals(piece)) {
+            for (final Piece piece : super.getBoard().currentPlayer().getActivePieces()) {
+                if (!super.getMovedPiece().equals(piece)) {
                     builder.setPiece(piece);
                 }
             }
 
-            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces()) {
+            for (final Piece piece : super.getBoard().currentPlayer().getOpponent().getActivePieces()) {
                 builder.setPiece(piece);
             }
 
@@ -312,7 +313,7 @@ public abstract class Move {
         }
 
         @Override
-        public String toString() { return BoardUtils.getPositionAtCoordinate(destinationCoordinate); }
+        public String toString() { return BoardUtils.getPositionAtCoordinate(super.getDestinationCoordinate()); }
     }
 
     private static abstract class CastleMove extends Move {
@@ -340,16 +341,16 @@ public abstract class Move {
         @Override
         public Board execute() {
 
-            final Board.Builder builder = new Board.Builder(this.board.getMoveCount() + 1, this.board.currentPlayer().getOpponent().getLeague(), null)
-                                    .updateWhiteTimer(this.board.whitePlayer().getMinute(), this.board.whitePlayer().getSecond(), this.board.whitePlayer().getMillisecond())
-                                    .updateBlackTimer(this.board.blackPlayer().getMinute(), this.board.blackPlayer().getSecond(), this.board.blackPlayer().getMillisecond());
+            final Board.Builder builder = new Board.Builder(super.getBoard().getMoveCount() + 1, super.getBoard().currentPlayer().getOpponent().getLeague(), null)
+                                    .updateWhiteTimer(super.getBoard().whitePlayer().getMinute(), super.getBoard().whitePlayer().getSecond(), super.getBoard().whitePlayer().getMillisecond())
+                                    .updateBlackTimer(super.getBoard().blackPlayer().getMinute(), super.getBoard().blackPlayer().getSecond(), super.getBoard().blackPlayer().getMillisecond());
 
-            for (final Piece piece : this.board.getAllPieces()) {
-                if (!this.movePiece.equals(piece) && !this.castleRook.equals(piece)) {
+            for (final Piece piece : super.getBoard().getAllPieces()) {
+                if (!super.getMovedPiece().equals(piece) && !this.castleRook.equals(piece)) {
                     builder.setPiece(piece);
                 }
             }
-            builder.setPiece(this.movePiece.movedPiece(this));
+            builder.setPiece(super.getMovedPiece().movedPiece(this));
             builder.setPiece(new Rook(this.castleRook.getLeague(), this.castleRookDestination, false));
             builder.setTransitionMove(this);
             return builder.build();

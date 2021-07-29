@@ -11,9 +11,9 @@ import static com.mygdx.game.chess.engine.board.Move.*;
 
 public abstract class Piece {
 
-    protected final PieceType pieceType;
-    protected final int piecePosition;
-    protected final League league;
+    private final PieceType pieceType;
+    private final int piecePosition;
+    private final League league;
     private final int hashCode;
     private final boolean isFirstMove;
 
@@ -49,13 +49,11 @@ public abstract class Piece {
                 league == otherPiece.getLeague() && isFirstMove == otherPiece.isFirstMove();
     }
 
-    public boolean isFirstMove() {
-        return this.isFirstMove;
-    }
+    public final boolean isFirstMove() { return this.isFirstMove; }
 
     public abstract Collection<Move> calculateLegalMoves(final Board board);
 
-    protected boolean isLegalMove(final Board board, final int candidateDestinationCoordinate) {
+    protected final boolean isLegalMove(final Board board, final int candidateDestinationCoordinate) {
         try {
             //make a move, if the move is safe, return true, else false
             final MoveTransition moveTransition = board.currentPlayer().makeMove(new MajorMove(board, this, candidateDestinationCoordinate));
@@ -68,19 +66,19 @@ public abstract class Piece {
 
     public abstract Piece movedPiece(final Move move);
 
-    public League getLeague() {
+    public final League getLeague() {
         return this.league;
     }
 
-    public int getPiecePosition() {
+    public final int getPiecePosition() {
         return this.piecePosition;
     }
 
-    public PieceType getPieceType() {
+    public final PieceType getPieceType() {
         return this.pieceType;
     }
 
-    public int getPieceValue() {
+    public final int getPieceValue() {
         return this.pieceType.getPieceValue();
     }
 }

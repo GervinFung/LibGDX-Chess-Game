@@ -16,9 +16,9 @@ import java.util.ArrayList;
 
 public abstract class Player {
 
-    protected final Board board;
-    protected final King playerKing;
-    protected final Collection<Move> legalMoves;
+    private final Board board;
+    private final King playerKing;
+    private final Collection<Move> legalMoves;
     private final boolean isInCheck;
     private final boolean noTimer;
     private int minute, second, millisecond;
@@ -53,6 +53,8 @@ public abstract class Player {
         }
         this.millisecond -= 1;
     }
+
+    public final Board getBoard() { return this.board; }
 
     public final int getMinute() { return this.minute; }
 

@@ -21,7 +21,7 @@ public final class BlackPlayer extends Player{
 
     @Override
     public Collection<Piece> getActivePieces() {
-        return board.getBlackPieces();
+        return super.getBoard().getBlackPieces();
     }
 
     @Override
@@ -31,7 +31,7 @@ public final class BlackPlayer extends Player{
 
     @Override
     public Player getOpponent() {
-        return board.whitePlayer();
+        return super.getBoard().whitePlayer();
     }
 
     @Override
@@ -46,28 +46,28 @@ public final class BlackPlayer extends Player{
 
         final List<Move> kingCastles = new ArrayList<>();
 
-        if (this.playerKing.isFirstMove() && !this.isInCheck()) {
+        if (super.getPlayerKing().isFirstMove() && !this.isInCheck()) {
             //blacks king side castle
-            if (!board.getTile(5).isTileOccupied() && !board.getTile(6).isTileOccupied()) {
-                final Tile rookTile = board.getTile(7);
+            if (!super.getBoard().getTile(5).isTileOccupied() && !super.getBoard().getTile(6).isTileOccupied()) {
+                final Tile rookTile = super.getBoard().getTile(7);
                 if (rookTile.isTileOccupied() && rookTile.getPiece().isFirstMove()) {
                     if (calculateAttacksOnTile(5, opponentLegals).isEmpty() &&
                             calculateAttacksOnTile(6, opponentLegals).isEmpty() &&
                             rookTile.getPiece() instanceof Rook) {
-                        kingCastles.add(new KingSideCastleMove(board, this.playerKing, 6, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 5));
+                        kingCastles.add(new KingSideCastleMove(super.getBoard(), super.getPlayerKing(), 6, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 5));
                     }
                 }
             }
             //blacks queens side castle
-            if (!board.getTile(1).isTileOccupied() &&
-                    !board.getTile(2).isTileOccupied() &&
-                    !board.getTile(3).isTileOccupied()) {
-                final Tile rookTile = board.getTile(0);
+            if (!super.getBoard().getTile(1).isTileOccupied() &&
+                    !super.getBoard().getTile(2).isTileOccupied() &&
+                    !super.getBoard().getTile(3).isTileOccupied()) {
+                final Tile rookTile = super.getBoard().getTile(0);
                 if (rookTile.isTileOccupied() && rookTile.getPiece().isFirstMove() &&
                         calculateAttacksOnTile(2, opponentLegals).isEmpty() &&
                         calculateAttacksOnTile(3, opponentLegals).isEmpty() &&
                         rookTile.getPiece() instanceof Rook) {
-                    kingCastles.add(new QueenSideCastleMove(board, this.playerKing, 2, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 3));
+                    kingCastles.add(new QueenSideCastleMove(super.getBoard(), super.getPlayerKing(), 2, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 3));
                 }
             }
         }

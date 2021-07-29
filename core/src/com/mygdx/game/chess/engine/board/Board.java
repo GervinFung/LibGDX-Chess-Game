@@ -69,7 +69,7 @@ public final class Board {
     public Collection<Piece> getBlackPieces() { return this.blackPieces; }
     public Pawn getEnPassantPawn() { return this.enPassantPawn; }
     public Tile getTile(final int tileCoordinate) {
-        return gameBoard.get(tileCoordinate);
+        return this.gameBoard.get(tileCoordinate);
     }
     public Move getTransitionMove() { return this.transitionMove; }
 
@@ -78,7 +78,6 @@ public final class Board {
         activePieces.addAll(this.blackPieces);
         return Collections.unmodifiableCollection(activePieces);
     }
-
 
     private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
         final List<Move> legalMoves = new ArrayList<>();

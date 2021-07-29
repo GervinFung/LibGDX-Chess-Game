@@ -26,7 +26,7 @@ public final class Bishop extends Piece{
         final List<Move> legalMoves = new ArrayList<>();
         for (final int CoordinateOFFSET : MOVE_VECTOR_COORDINATE) {
 
-            int destinationCoordinate = this.piecePosition;
+            int destinationCoordinate = super.getPiecePosition();
 
             while (BoardUtils.isValidTileCoordinate(destinationCoordinate)) {
 

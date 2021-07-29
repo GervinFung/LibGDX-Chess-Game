@@ -85,14 +85,14 @@ public final class King extends Piece{
         final List<Move> legalMoves = new ArrayList<>();
         for (final int currentCandidateOFFSET : MOVE_VECTOR_COORDINATE) {
 
-            final int candidateDestinationCoordinate = this.piecePosition + currentCandidateOFFSET;
+            final int candidateDestinationCoordinate = super.getPiecePosition() + currentCandidateOFFSET;
 
             if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
 
                 final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
-                if (isFirstColumnExclusion(this.piecePosition, currentCandidateOFFSET) ||
-                        isEighthColumnExclusion(this.piecePosition, currentCandidateOFFSET)) {
+                if (isFirstColumnExclusion(super.getPiecePosition(), currentCandidateOFFSET) ||
+                        isEighthColumnExclusion(super.getPiecePosition(), currentCandidateOFFSET)) {
                     continue;
                 }
 
@@ -109,10 +109,8 @@ public final class King extends Piece{
                 }
             }
         }
-        if (!this.isCastled) {
-            try {
-                legalMoves.addAll(calculateKingCastle(board, board.currentPlayer().getOpponent().getLegalMoves()));
-            } catch (final NullPointerException ignored) {}
+        if (!this.isCastled && board.currentPlayer() != null) {
+            legalMoves.addAll(calculateKingCastle(board, board.currentPlayer().getOpponent().getLegalMoves()));
         }
         return Collections.unmodifiableList(legalMoves);
     }

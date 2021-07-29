@@ -24,7 +24,7 @@ public final class MiniMax {
     private final int searchDepth, nThreads;
     private int quiescenceCount;
     private static final int MAX_QUIESCENCE = 5000 * 5;
-    private volatile boolean terminateProcess;
+    private final AtomicBoolean terminateProcess;
     private final AtomicInteger moveCount;
 
     private enum MoveSorter {
@@ -32,31 +32,21 @@ public final class MiniMax {
         STANDARD_SORT {
             @Override
             Collection<Move> sort(final Collection<Move> moves) {
-                return Ordering.from(new Comparator<Move>() {
-                    @Override
-                    public int compare(final Move move1, final Move move2) {
-                        return ComparisonChain.start()
-                                .compareTrueFirst(move1.isCastlingMove(), move2.isCastlingMove())
-                                .compare(BoardUtils.mostValuableVictimLeastValuableAggressor(move2), BoardUtils.mostValuableVictimLeastValuableAggressor(move1))
-                                .result();
-                    }
-                }).immutableSortedCopy(moves);
+                return Ordering.from((Comparator<Move>) (move1, move2) -> ComparisonChain.start()
+                        .compareTrueFirst(move1.isCastlingMove(), move2.isCastlingMove())
+                        .compare(BoardUtils.mostValuableVictimLeastValuableAggressor(move2), BoardUtils.mostValuableVictimLeastValuableAggressor(move1))
+                        .result()).immutableSortedCopy(moves);
             }
         },
 
         EXPENSIVE_SORT {
             @Override
             Collection<Move> sort(final Collection<Move> moves) {
-                return Ordering.from(new Comparator<Move>() {
-                    @Override
-                    public int compare(final Move move1, final Move move2) {
-                        return ComparisonChain.start()
-                                .compareTrueFirst(BoardUtils.kingThreat(move1), BoardUtils.kingThreat(move2))
-                                .compareTrueFirst(move1.isCastlingMove(), move2.isCastlingMove())
-                                .compare(BoardUtils.mostValuableVictimLeastValuableAggressor(move2), BoardUtils.mostValuableVictimLeastValuableAggressor(move1))
-                                .result();
-                    }
-                }).immutableSortedCopy(moves);
+                return Ordering.from((Comparator<Move>) (move1, move2) -> ComparisonChain.start()
+                        .compareTrueFirst(BoardUtils.kingThreat(move1), BoardUtils.kingThreat(move2))
+                        .compareTrueFirst(move1.isCastlingMove(), move2.isCastlingMove())
+                        .compare(BoardUtils.mostValuableVictimLeastValuableAggressor(move2), BoardUtils.mostValuableVictimLeastValuableAggressor(move1))
+                        .result()).immutableSortedCopy(moves);
             }
         };
 
@@ -67,14 +57,10 @@ public final class MiniMax {
     public MiniMax(final int searchDepth) {
         this.evaluator = new StandardBoardEvaluation();
         this.nThreads = Runtime.getRuntime().availableProcessors();
-        if (this.nThreads > 4) {
-            this.searchDepth = searchDepth + 1;
-        } else {
-            this.searchDepth = searchDepth;
-        }
+        this.searchDepth = this.nThreads > 4 ? searchDepth + 1 : searchDepth;
         this.quiescenceCount = 0;
         this.moveCount = new AtomicInteger(0);
-        this.terminateProcess = false;
+        this.terminateProcess = new AtomicBoolean(false);
     }
 
     public Move execute(final Board board) {
@@ -82,8 +68,6 @@ public final class MiniMax {
         final AtomicInteger highestSeenValue = new AtomicInteger(Integer.MIN_VALUE);
         final AtomicInteger lowestSeenValue = new AtomicInteger(Integer.MAX_VALUE);
         final AtomicInteger currentValue = new AtomicInteger(0);
-
-        final AtomicBoolean isCheckMate = new AtomicBoolean(false);
 
         final AtomicReference<Move> bestMove = new AtomicReference<>();
 
@@ -93,39 +77,30 @@ public final class MiniMax {
             final MoveTransition moveTransition = board.currentPlayer().makeMove(move);
             this.quiescenceCount = 0;
 
-            if (isCheckMate.get()) {
-                break;
-            }
             if (moveTransition.getMoveStatus().isDone()) {
-                executorService.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            final int currentVal = currentPlayer.getLeague().isWhite() ?
-                                    min(moveTransition.getLatestBoard(), MiniMax.this.searchDepth - 1, highestSeenValue.get(), lowestSeenValue.get()) :
-                                    max(moveTransition.getLatestBoard(), MiniMax.this.searchDepth - 1, highestSeenValue.get(), lowestSeenValue.get());
+                if (moveTransition.getLatestBoard().currentPlayer().isInCheckmate()) {
+                    return move;
+                }
+                executorService.execute(() -> {
+                    final int currentVal = currentPlayer.getLeague().isWhite() ?
+                            min(moveTransition.getLatestBoard(), MiniMax.this.searchDepth - 1, highestSeenValue.get(), lowestSeenValue.get()) :
+                            max(moveTransition.getLatestBoard(), MiniMax.this.searchDepth - 1, highestSeenValue.get(), lowestSeenValue.get());
 
-                            currentValue.set(currentVal);
-                            if (MiniMax.this.terminateProcess) {
-                                //immediately set move to null after time out for AI
-                                bestMove.set(Move.MoveFactory.getNullMove());
-                            }
-                            if (currentPlayer.getLeague().isWhite() && currentValue.get() > highestSeenValue.get()) {
-                                highestSeenValue.set(currentValue.get());
-                                bestMove.set(move);
-                                if(moveTransition.getLatestBoard().blackPlayer().isInCheckmate()) {
-                                    isCheckMate.set(true);
-                                }
-                            }
-                            else if (currentPlayer.getLeague().isBlack() && currentValue.get() < lowestSeenValue.get()) {
-                                lowestSeenValue.set(currentValue.get());
-                                bestMove.set(move);
-                                if(moveTransition.getLatestBoard().whitePlayer().isInCheckmate()) {
-                                    isCheckMate.set(true);
-                                }
-                            }
-                            moveCount.set(moveCount.get() + 1);
-                        }
+                    currentValue.set(currentVal);
+                    if (terminateProcess.get()) {
+                        //immediately set move to null after time out for AI
+                        bestMove.set(Move.MoveFactory.getNullMove());
                     }
+                    if (currentPlayer.getLeague().isWhite() && currentValue.get() > highestSeenValue.get()) {
+                        highestSeenValue.set(currentValue.get());
+                        bestMove.set(move);
+                    }
+                    else if (currentPlayer.getLeague().isBlack() && currentValue.get() < lowestSeenValue.get()) {
+                        lowestSeenValue.set(currentValue.get());
+                        bestMove.set(move);
+                    }
+                    moveCount.set(moveCount.get() + 1);
+                }
                 );
             }
 
@@ -141,13 +116,19 @@ public final class MiniMax {
     }
 
     //setter
-    public void setTerminateProcess(final boolean terminateProcess) { this.terminateProcess = terminateProcess; }
+    public void setTerminateProcess(final boolean terminateProcess) {
+        this.terminateProcess.set(terminateProcess);
+    }
     //getter
-    public boolean getTerminateProcess() { return this.terminateProcess; }
-    public int getMoveCount() { return this.moveCount.get(); }
+    public boolean getTerminateProcess() {
+        return this.terminateProcess.get();
+    }
+    public int getMoveCount() {
+        return this.moveCount.get();
+    }
 
     private int max(final Board board, final int depth, final int highest, final int lowest) {
-        if (this.terminateProcess) {
+        if (this.terminateProcess.get()) {
             return highest;
         }
         if (depth == 0 || BoardUtils.isEndGameScenario(board)) {
@@ -169,7 +150,7 @@ public final class MiniMax {
     }
 
     private int min(final Board board, final int depth, final int highest, final int lowest) {
-        if (this.terminateProcess) {
+        if (this.terminateProcess.get()) {
             return lowest;
         }
         if (depth == 0 || BoardUtils.isEndGameScenario(board)) {
@@ -202,7 +183,7 @@ public final class MiniMax {
                 }
             }
             if(activityMeasure >= 2) {
-                this.quiescenceCount++;
+                this.quiescenceCount += 1;
                 return 2;
             }
         }

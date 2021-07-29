@@ -8,8 +8,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.mygdx.game.GUI.gui.ChessGame;
-import com.mygdx.game.GUI.gui.GUI_UTILS;
+import com.mygdx.game.gui.ChessGame;
+import com.mygdx.game.gui.GuiUtils;
 import com.mygdx.game.chess.engine.FEN.FenUtilities;
 
 public final class DesktopLauncher {
@@ -46,9 +46,9 @@ public final class DesktopLauncher {
 		final String dialogTitle = "Exit Game Confirmation";
 		if (this.chessGame.getScreen().equals(this.chessGame.getGameScreen())) {
 			DesktopLauncher.this.chessGame.getGameScreen().getGameTimerPanel().continueTimer(false);
-			label = new Label("Request confirmation to exit game and save current one", GUI_UTILS.UI_SKIN);
+			label = new Label("Request confirmation to exit game and save current one", GuiUtils.UI_SKIN);
 			label.setColor(Color.BLACK);
-			new Dialog(dialogTitle, GUI_UTILS.UI_SKIN) {
+			new Dialog(dialogTitle, GuiUtils.UI_SKIN) {
 				@Override
 				protected void result(final Object object) {
 					this.remove();
@@ -57,10 +57,10 @@ public final class DesktopLauncher {
 						return;
 					}
 					if ((Boolean) object) {
-						GUI_UTILS.MOVE_LOG_PREF.putString(GUI_UTILS.MOVE_LOG_STATE, FenUtilities.getGameData(
+						GuiUtils.MOVE_LOG_PREF.putString(GuiUtils.MOVE_LOG_STATE, FenUtilities.getGameData(
 								DesktopLauncher.this.chessGame.getGameScreen().getMoveHistory().getMoveLog(),
 								DesktopLauncher.this.chessGame.getGameScreen().getChessBoard()));
-						GUI_UTILS.MOVE_LOG_PREF.flush();
+						GuiUtils.MOVE_LOG_PREF.flush();
 					}
 					Gdx.app.exit();
 				}
@@ -72,9 +72,9 @@ public final class DesktopLauncher {
 			return;
 
 		} else if (this.chessGame.getScreen().equals(this.chessGame.getAboutScreen()) || this.chessGame.getScreen().equals(this.chessGame.getWelcomeScreen())) {
-			label = new Label("Request confirmation to exit game", GUI_UTILS.UI_SKIN);
+			label = new Label("Request confirmation to exit game", GuiUtils.UI_SKIN);
 			label.setColor(Color.BLACK);
-			new Dialog(dialogTitle, GUI_UTILS.UI_SKIN) {
+			new Dialog(dialogTitle, GuiUtils.UI_SKIN) {
 				@Override
 				protected void result(final Object object) {
 					this.remove();

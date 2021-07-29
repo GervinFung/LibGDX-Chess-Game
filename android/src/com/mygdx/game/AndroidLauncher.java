@@ -8,8 +8,8 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.mygdx.game.GUI.gui.ChessGame;
-import com.mygdx.game.GUI.gui.GUI_UTILS;
+import com.mygdx.game.gui.ChessGame;
+import com.mygdx.game.gui.GuiUtils;
 import com.mygdx.game.chess.engine.FEN.FenUtilities;
 
 public final class AndroidLauncher extends AndroidApplication {
@@ -36,8 +36,8 @@ public final class AndroidLauncher extends AndroidApplication {
 					.setTitle("Exit Game")
 					.setMessage("Request confirmation to exit game and save the current one")
 					.setPositiveButton("yes", (dialog, which) -> {
-						GUI_UTILS.MOVE_LOG_PREF.putString(GUI_UTILS.MOVE_LOG_STATE, FenUtilities.getGameData(chessGame.getGameScreen().getMoveHistory().getMoveLog(), chessGame.getGameScreen().getChessBoard()));
-						GUI_UTILS.MOVE_LOG_PREF.flush();
+						GuiUtils.MOVE_LOG_PREF.putString(GuiUtils.MOVE_LOG_STATE, FenUtilities.getGameData(chessGame.getGameScreen().getMoveHistory().getMoveLog(), chessGame.getGameScreen().getChessBoard()));
+						GuiUtils.MOVE_LOG_PREF.flush();
 						chessGame.getGameScreen().getGameTimerPanel().continueTimer(true);
 						this.finishAffinity();
 						System.exit(0);

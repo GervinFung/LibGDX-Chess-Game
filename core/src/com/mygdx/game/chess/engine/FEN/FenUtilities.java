@@ -78,6 +78,17 @@ public final class FenUtilities {
                 "0 " + board.getMoveCount();
     }
 
+    private static String replaceDashWithNum(final String string) {
+        return string.replaceAll("--------", "8")
+                .replaceAll("-------", "7")
+                .replaceAll("------", "6")
+                .replaceAll("-----", "5")
+                .replaceAll("----", "4")
+                .replaceAll("---", "3")
+                .replaceAll("--", "2")
+                .replaceAll("-", "1");
+    }
+
     private static String calculateBoardText(final Board board) {
         final StringBuilder builder = new StringBuilder();
 
@@ -92,16 +103,7 @@ public final class FenUtilities {
         builder.insert(53, "/");
         builder.insert(62, "/");
 
-        return builder.toString()
-                .replaceAll("--------", "8")
-                .replaceAll("-------", "7")
-                .replaceAll("------", "6")
-                .replaceAll("-----", "5")
-                .replaceAll("----", "4")
-                .replaceAll("---", "3")
-                .replaceAll("--", "2")
-                .replaceAll("-", "1");
-
+        return replaceDashWithNum(builder.toString());
     }
 
     private static boolean kingSideCastle(final String fenCastleString, final boolean isWhite) { return isWhite ? fenCastleString.contains("K") : fenCastleString.contains("k"); }
@@ -129,16 +131,7 @@ public final class FenUtilities {
         final boolean blackQueenSideCastle = queenSideCastle(fenPartitions[2], false);
 
         final String gameConfiguration = fenPartitions[0];
-        final char[] boardTiles = gameConfiguration.replaceAll("/", "")
-                .replaceAll("8", "--------")
-                .replaceAll("7", "-------")
-                .replaceAll("6", "------")
-                .replaceAll("5", "-----")
-                .replaceAll("4", "----")
-                .replaceAll("3", "---")
-                .replaceAll("2", "--")
-                .replaceAll("1", "-")
-                .toCharArray();
+        final char[] boardTiles = replaceDashWithNum(gameConfiguration.replaceAll("/", "")).toCharArray();
         int i = 0;
         while (i < boardTiles.length) {
             switch (boardTiles[i]) {

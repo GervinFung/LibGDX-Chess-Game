@@ -26,15 +26,15 @@ public final class Knight extends Piece{
         final List<Move> legalMoves = new ArrayList<>();
         for (final int currentCandidateOFFSET : MOVE_VECTOR_COORDINATE) {
 
-            final int candidateDestinationCoordinate = this.piecePosition + currentCandidateOFFSET;
+            final int candidateDestinationCoordinate = super.getPiecePosition() + currentCandidateOFFSET;
 
             //not out of bound
             if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
 
-                if (isFirstColumnExclusion(this.piecePosition, currentCandidateOFFSET) ||
-                    isSecondColumnExclusion(this.piecePosition, currentCandidateOFFSET) ||
-                    isSeventhColumnExclusion(this.piecePosition, currentCandidateOFFSET) ||
-                    isEighthColumnExclusion(this.piecePosition, currentCandidateOFFSET)) {
+                if (isFirstColumnExclusion(super.getPiecePosition(), currentCandidateOFFSET) ||
+                    isSecondColumnExclusion(super.getPiecePosition(), currentCandidateOFFSET) ||
+                    isSeventhColumnExclusion(super.getPiecePosition(), currentCandidateOFFSET) ||
+                    isEighthColumnExclusion(super.getPiecePosition(), currentCandidateOFFSET)) {
                     continue;
                 }
 
