@@ -9,14 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mygdx.game.gui.board.GameProps;
-import com.mygdx.game.gui.gameScreen.GameScreen;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.player.ArtificialIntelligence.MiniMax;
+import com.mygdx.game.gui.board.GameProps;
+import com.mygdx.game.gui.gameScreen.GameScreen;
 
 import java.util.concurrent.Executors;
 
-public final class ArtificialIntelligence{
+public final class ArtificialIntelligence {
 
     private final SelectBox<Integer> level;
     private final ProgressBar progressBar;
@@ -26,15 +26,25 @@ public final class ArtificialIntelligence{
         this.level = new SelectBox<>(GuiUtils.UI_SKIN);
         this.level.setItems(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         this.progressBar = new ProgressBar(0, 1, 1, false, GuiUtils.UI_SKIN);
-        this.progressBar.setColor(new Color(50/255f, 205/255f, 50/255f, 1));
+        this.progressBar.setColor(new Color(50 / 255f, 205 / 255f, 50 / 255f, 1));
         this.miniMax = new MiniMax(0);
     }
 
-    public void setStopAI(final boolean stopAI) { this.miniMax.setTerminateProcess(stopAI); }
+    public void setStopAI(final boolean stopAI) {
+        this.miniMax.setTerminateProcess(stopAI);
+    }
 
-    public SelectBox<Integer> getLevelSelector() { return this.level; }
-    public ProgressBar getProgressBar() { return this.progressBar; }
-    public int getMoveCount() { return this.miniMax.getMoveCount(); }
+    public SelectBox<Integer> getLevelSelector() {
+        return this.level;
+    }
+
+    public ProgressBar getProgressBar() {
+        return this.progressBar;
+    }
+
+    public int getMoveCount() {
+        return this.miniMax.getMoveCount();
+    }
 
     private Dialog showProgressBar(final GameScreen gameScreen) {
         final Table table = new Table();
@@ -46,7 +56,9 @@ public final class ArtificialIntelligence{
         final TextButton textButton = new TextButton("Remove Progress Bar", GuiUtils.UI_SKIN);
         textButton.addListener(new ClickListener() {
             @Override
-            public void clicked(final InputEvent event, final float x, final float y) { dialog.remove(); }
+            public void clicked(final InputEvent event, final float x, final float y) {
+                dialog.remove();
+            }
         });
 
         table.add(textButton);
@@ -63,8 +75,8 @@ public final class ArtificialIntelligence{
         }
         final Dialog dialog;
         if (gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer()) &&
-            gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer().getOpponent()) &&
-            this.level.getSelected() < 3) {
+                gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer().getOpponent()) &&
+                this.level.getSelected() < 3) {
             dialog = null;
         } else {
             dialog = this.showProgressBar(gameScreen);

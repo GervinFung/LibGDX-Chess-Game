@@ -3,6 +3,16 @@ It's cross-platform as well, unfortunately it cannot run on web as it is a multi
 
 NOTE: **Can't create ipa for ios since I am not using macOS...**
 
+***Apparently a minimum of Android API Level of 24 or Android 7.0 Nougat is required to use Stream API***
+***However, it appears that there is also a library that desugar Stream API syntax thus a lower android version can be used***
+
+### To generate executable, open the terminal and do the following
+1. `Desktop`: ./gradlew desktop:dist. The generated JAR file will be located in the desktop/build/libs/ folder
+2. `Android`: ./gradlew android:assembleRelease. This will create an unsigned APK file in the android/build/outputs/apk folder
+3. `iOS`: ./gradlew ios:createIPA. This will create an IPA in the ios/build/robovm folder
+
+### Visit https://github.com/libgdx/libgdx/wiki/Deploying-your-application for more info
+
 ## Folder Structure
 
 The workspace contains two folders by default, where:
@@ -41,8 +51,8 @@ No. | Features
 14.| Show menu and about screen
 
 **Welcome Screen**
-![Chess sample](welcome.png)
+![Chess sample](./img/welcome.png)
 **About Screen**
-![Chess sample](about.png)
+![Chess sample](./img/about.png)
 **Game Screen**
-![Chess sample](chess.png)
+![Chess sample](./img/chess.png)

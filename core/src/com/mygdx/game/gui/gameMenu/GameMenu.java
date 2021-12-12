@@ -12,12 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.mygdx.game.gui.ChessGame;
-import com.mygdx.game.gui.GuiUtils;
-import com.mygdx.game.gui.board.GameProps;
 import com.mygdx.game.chess.engine.FEN.FenUtilities;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
+import com.mygdx.game.gui.ChessGame;
+import com.mygdx.game.gui.GuiUtils;
+import com.mygdx.game.gui.board.GameProps;
 import com.mygdx.game.gui.gameScreen.GameScreen;
 
 import java.util.Arrays;
@@ -38,8 +38,10 @@ public final class GameMenu extends TextButton {
             }
         });
     }
-    
-    public void detectKeyPressed(final GameScreen gameScreen) { this.gameMenuDialog.detectKeyPressed(gameScreen); }
+
+    public void detectKeyPressed(final GameScreen gameScreen) {
+        this.gameMenuDialog.detectKeyPressed(gameScreen);
+    }
 
     private static final class GameMenuDialog extends Dialog {
 
@@ -49,10 +51,10 @@ public final class GameMenu extends TextButton {
             super("Game Menu", GuiUtils.UI_SKIN);
 
             this.gameButtonAbstractList = Arrays.asList(
-                new NewGameButton(chessGame, gameScreen, this),
-                new SaveGameButton(chessGame, gameScreen, this),
-                new LoadGameButton(chessGame, gameScreen, this),
-                new ExitGameButton(chessGame, gameScreen, this)
+                    new NewGameButton(chessGame, gameScreen, this),
+                    new SaveGameButton(chessGame, gameScreen, this),
+                    new LoadGameButton(chessGame, gameScreen, this),
+                    new ExitGameButton(chessGame, gameScreen, this)
             );
 
             this.getContentTable().padTop(10);
@@ -104,7 +106,8 @@ public final class GameMenu extends TextButton {
                     gameMenuDialog.remove();
                     gameScreen.getGameTimerPanel().continueTimer(false);
                     NewGameButton.super.dialog.show(gameScreen.getStage());
-                }});
+                }
+            });
         }
 
         @Override
@@ -153,40 +156,76 @@ public final class GameMenu extends TextButton {
             private enum TimerMinute {
                 FIVE {
                     @Override
-                    int getMinute() { return 5; }
+                    int getMinute() {
+                        return 5;
+                    }
+
                     @Override
-                    public String toString() { return "5 minutes"; }
+                    public String toString() {
+                        return "5 minutes";
+                    }
                 }, TEN {
                     @Override
-                    int getMinute() { return 10; }
+                    int getMinute() {
+                        return 10;
+                    }
+
                     @Override
-                    public String toString() { return "10 minutes"; }
+                    public String toString() {
+                        return "10 minutes";
+                    }
                 }, FIFTEEN {
                     @Override
-                    int getMinute() { return 15; }
+                    int getMinute() {
+                        return 15;
+                    }
+
                     @Override
-                    public String toString() { return "15 minutes"; }
+                    public String toString() {
+                        return "15 minutes";
+                    }
                 }, THIRTY {
                     @Override
-                    int getMinute() { return 30; }
+                    int getMinute() {
+                        return 30;
+                    }
+
                     @Override
-                    public String toString() { return "30 minutes"; }
+                    public String toString() {
+                        return "30 minutes";
+                    }
                 }, FORTY_FIVE {
                     @Override
-                    int getMinute() { return 45; }
+                    int getMinute() {
+                        return 45;
+                    }
+
                     @Override
-                    public String toString() { return "45 minutes"; }
+                    public String toString() {
+                        return "45 minutes";
+                    }
                 }, SIXTY {
                     @Override
-                    int getMinute() { return 60; }
+                    int getMinute() {
+                        return 60;
+                    }
+
                     @Override
-                    public String toString() { return "60 minutes"; }
+                    public String toString() {
+                        return "60 minutes";
+                    }
                 }, NO_TIMER {
                     @Override
-                    int getMinute() { return -1; }
+                    int getMinute() {
+                        return -1;
+                    }
+
                     @Override
-                    public String toString() { return "No Timer"; }
+                    public String toString() {
+                        return "No Timer";
+                    }
                 };
+
                 abstract int getMinute();
             }
 
@@ -197,8 +236,8 @@ public final class GameMenu extends TextButton {
                 this.getContentTable().padTop(10);
                 this.getContentTable().add(this.timer).padBottom(20).row();
                 this.minute = BoardUtils.DEFAULT_TIMER_MINUTE;
-                this.getContentTable().add(new SetupButton(gameScreen,this, "Ok")).align(Align.bottomLeft);
-                this.getContentTable().add(new SetupButton(gameScreen,this, "Cancel")).align(Align.bottomRight);
+                this.getContentTable().add(new SetupButton(gameScreen, this, "Ok")).align(Align.bottomLeft);
+                this.getContentTable().add(new SetupButton(gameScreen, this, "Cancel")).align(Align.bottomRight);
                 this.addListener(new ChangeListener() {
                     @Override
                     public void changed(final ChangeEvent event, final Actor actor) {
@@ -246,7 +285,8 @@ public final class GameMenu extends TextButton {
                 public void clicked(final InputEvent event, final float x, final float y) {
                     gameMenuDialog.remove();
                     gameScreen.getGameTimerPanel().continueTimer(false);
-                    ExitGameButton.super.dialog.show(gameScreen.getStage()); }
+                    ExitGameButton.super.dialog.show(gameScreen.getStage());
+                }
             });
         }
 

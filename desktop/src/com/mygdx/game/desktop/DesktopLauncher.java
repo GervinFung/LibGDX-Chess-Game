@@ -8,9 +8,9 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.mygdx.game.chess.engine.FEN.FenUtilities;
 import com.mygdx.game.gui.ChessGame;
 import com.mygdx.game.gui.GuiUtils;
-import com.mygdx.game.chess.engine.FEN.FenUtilities;
 
 public final class DesktopLauncher {
 

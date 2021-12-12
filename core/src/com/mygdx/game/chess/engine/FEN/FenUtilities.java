@@ -1,5 +1,9 @@
 package com.mygdx.game.chess.engine.FEN;
 
+import static com.mygdx.game.chess.engine.board.Board.Builder;
+import static com.mygdx.game.chess.engine.board.Board.createStandardBoardForMoveHistory;
+
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
@@ -12,11 +16,7 @@ import com.mygdx.game.chess.engine.pieces.Pawn;
 import com.mygdx.game.chess.engine.pieces.Queen;
 import com.mygdx.game.chess.engine.pieces.Rook;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static com.mygdx.game.chess.engine.board.Board.*;
+import java.util.stream.Collectors;
 
 public final class FenUtilities {
 
@@ -24,43 +24,42 @@ public final class FenUtilities {
         throw new RuntimeException("Non instantiable");
     }
 
-    private static List<Integer> saveMoveLogCoordinates(final MoveLog moveLog) {
-        final List<Integer> coordinates = new ArrayList<>();
-        for (final Move move: moveLog.getMoves()) {
-            coordinates.add(move.getCurrentCoordinate());
-            coordinates.add(move.getDestinationCoordinate());
+    private static final class Coordinate {
+        private final int currentCoordinate, destinationCoordinate;
+
+        public Coordinate(final int currentCoordinate, final int destinationCoordinate) {
+            this.currentCoordinate = currentCoordinate;
+            this.destinationCoordinate = destinationCoordinate;
         }
-        return Collections.unmodifiableList(coordinates);
+    }
+
+    private static String formGameData(final ImmutableList<Coordinate> coordinateList, final String gameData, final int index) {
+        if (index == coordinateList.size()) {
+            return gameData;
+        }
+        final Coordinate coordinate = coordinateList.get(index);
+        return formGameData(coordinateList, gameData + " " + coordinate.currentCoordinate + " " + coordinate.destinationCoordinate, index + 1);
     }
 
     public static String getGameData(final MoveLog moveLog, final Board board) {
-        final List<Integer> coordinates = saveMoveLogCoordinates(moveLog);
-        final StringBuilder stringBuilder = new StringBuilder(coordinates.size());
-        int j = 0;
-        for (final int i: coordinates) {
-            j++;
-            if (j == coordinates.size()) {
-                stringBuilder.append(i);
-            } else {
-                stringBuilder.append(i).append(" ");
-            }
-        }
-        return stringBuilder.toString() + getPlayerTimer(board);
+        final ImmutableList<Coordinate> coordinateList = ImmutableList.copyOf(moveLog.getMoves().parallelStream().map(move -> new Coordinate(move.getCurrentCoordinate(), move.getDestinationCoordinate())).collect(Collectors.toList()));
+        return formGameData(coordinateList, "", 0).trim() + getPlayerTimer(board);
     }
 
     public static Board createGameFromSavedData(final String data, final MoveLog moveLog) {
         final String[] dataPartitioned = data.split("\n");
         final String[] coordinates = dataPartitioned[0].split(" ");
-        moveLog.clear();
         Board board = createStandardBoardForMoveHistory(dataPartitioned[1].split(":"), dataPartitioned[2].split(":"));
         if (dataPartitioned[0].isEmpty()) {
             return board;
         }
+        final MoveLog updatedMoveLog = new MoveLog();
         for (int i = 0; i < coordinates.length; i++) {
             final Move move = Move.MoveFactory.createMoveFromMoveHistory(board, Integer.parseInt(coordinates[i]), Integer.parseInt(coordinates[++i]));
-            moveLog.addMove(move);
+            updatedMoveLog.addMove(move);
             board = board.currentPlayer().makeMove(move).getLatestBoard();
         }
+        moveLog.addAllMove(updatedMoveLog.getMoves());
         return board;
     }
 
@@ -89,12 +88,21 @@ public final class FenUtilities {
                 .replaceAll("-", "1");
     }
 
+    private static String replaceNumWithDash(final String string) {
+        return string.replaceAll("/", "")
+                .replaceAll("8", "--------")
+                .replaceAll("7", "-------")
+                .replaceAll("6", "------")
+                .replaceAll("5", "-----")
+                .replaceAll("4", "----")
+                .replaceAll("3", "---")
+                .replaceAll("2", "--")
+                .replaceAll("1", "-");
+    }
+
     private static String calculateBoardText(final Board board) {
         final StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < BoardUtils.NUM_TILES; i++) {
-            builder.append(board.getTile(i).toString());
-        }
+        builder.append(BoardUtils.getBoardNumStream().map(i -> board.getTile(i).toString()).collect(Collectors.joining()));
         builder.insert(8, "/");
         builder.insert(17, "/");
         builder.insert(26, "/");
@@ -102,13 +110,16 @@ public final class FenUtilities {
         builder.insert(44, "/");
         builder.insert(53, "/");
         builder.insert(62, "/");
-
         return replaceDashWithNum(builder.toString());
     }
 
-    private static boolean kingSideCastle(final String fenCastleString, final boolean isWhite) { return isWhite ? fenCastleString.contains("K") : fenCastleString.contains("k"); }
+    private static boolean kingSideCastle(final String fenCastleString, final boolean isWhite) {
+        return isWhite ? fenCastleString.contains("K") : fenCastleString.contains("k");
+    }
 
-    private static boolean queenSideCastle(final String fenCastleString, final boolean isWhite) { return isWhite ? fenCastleString.contains("Q") : fenCastleString.contains("q"); }
+    private static boolean queenSideCastle(final String fenCastleString, final boolean isWhite) {
+        return isWhite ? fenCastleString.contains("Q") : fenCastleString.contains("q");
+    }
 
     private static Pawn getEnPassantPawn(final League league, final String fenEnPassantCoordinate) {
         if (!"-".equals(fenEnPassantCoordinate)) {
@@ -131,7 +142,7 @@ public final class FenUtilities {
         final boolean blackQueenSideCastle = queenSideCastle(fenPartitions[2], false);
 
         final String gameConfiguration = fenPartitions[0];
-        final char[] boardTiles = replaceDashWithNum(gameConfiguration.replaceAll("/", "")).toCharArray();
+        final char[] boardTiles = replaceNumWithDash(gameConfiguration.replaceAll("/", "")).toCharArray();
         int i = 0;
         while (i < boardTiles.length) {
             switch (boardTiles[i]) {
@@ -192,10 +203,11 @@ public final class FenUtilities {
         }
         return builder.build();
     }
+
     private static League getLeague(final String moveMakerString) {
-        if("w".equals(moveMakerString)) {
+        if ("w".equals(moveMakerString)) {
             return League.WHITE;
-        } else if("b".equals(moveMakerString)) {
+        } else if ("b".equals(moveMakerString)) {
             return League.BLACK;
         }
         throw new RuntimeException("Invalid FEN String " + moveMakerString);
@@ -203,13 +215,15 @@ public final class FenUtilities {
 
     private static String calculateEnPassantSquare(final Board board) {
         final Pawn enPassantPawn = board.getEnPassantPawn();
-        if(enPassantPawn != null) {
+        if (enPassantPawn != null) {
             return BoardUtils.getPositionAtCoordinate(enPassantPawn.getPiecePosition() - (8) * enPassantPawn.getLeague().getDirection());
         }
         return "-";
     }
 
-    private static String calculateCurrentPlayerText(final Board board) { return board.currentPlayer().toString().substring(0, 1).toLowerCase(); }
+    private static String calculateCurrentPlayerText(final Board board) {
+        return board.currentPlayer().toString().substring(0, 1).toLowerCase();
+    }
 
     private static String calculateCastleText(final Board board) {
         final StringBuilder builder = new StringBuilder();

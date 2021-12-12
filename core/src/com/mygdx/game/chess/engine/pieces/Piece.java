@@ -1,13 +1,12 @@
 package com.mygdx.game.chess.engine.pieces;
 
+import static com.mygdx.game.chess.engine.board.Move.MajorMove;
+
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.MoveTransition;
-
-import java.util.Collection;
-
-import static com.mygdx.game.chess.engine.board.Move.*;
 
 public abstract class Piece {
 
@@ -35,23 +34,31 @@ public abstract class Piece {
 
     //prior to JDK 7, a manual hashCode is needed
     @Override
-    public int hashCode() { return this.hashCode; }
+    public int hashCode() {
+        return this.hashCode;
+    }
 
     @Override
     public boolean equals(final Object object) {
 
-        if (this == object) { return true; }
+        if (this == object) {
+            return true;
+        }
 
-        if (!(object instanceof Piece)) { return false; }
+        if (!(object instanceof Piece)) {
+            return false;
+        }
 
-        final Piece otherPiece = (Piece)object;
-        return piecePosition == otherPiece.getPiecePosition() && pieceType == otherPiece.getPieceType() &&
-                league == otherPiece.getLeague() && isFirstMove == otherPiece.isFirstMove();
+        final Piece otherPiece = (Piece) object;
+        return this.piecePosition == otherPiece.getPiecePosition() && this.pieceType == otherPiece.getPieceType() &&
+                this.league == otherPiece.getLeague() && this.isFirstMove == otherPiece.isFirstMove();
     }
 
-    public final boolean isFirstMove() { return this.isFirstMove; }
+    public final boolean isFirstMove() {
+        return this.isFirstMove;
+    }
 
-    public abstract Collection<Move> calculateLegalMoves(final Board board);
+    public abstract ImmutableList<Move> calculateLegalMoves(final Board board);
 
     protected final boolean isLegalMove(final Board board, final int candidateDestinationCoordinate) {
         try {

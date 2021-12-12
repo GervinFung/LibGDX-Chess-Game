@@ -1,19 +1,19 @@
 package com.mygdx.game.chess.test;
 
-import org.junit.Test;
+import static com.mygdx.game.chess.engine.board.Board.Builder;
+import static com.mygdx.game.chess.engine.board.Move.MoveFactory;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
+import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.board.MoveTransition;
-import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.pieces.Bishop;
 import com.mygdx.game.chess.engine.pieces.King;
 import com.mygdx.game.chess.engine.pieces.Pawn;
 
-import static com.mygdx.game.chess.engine.board.Board.Builder;
-import static com.mygdx.game.chess.engine.board.Move.MoveFactory;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public final class StaleMateTest {
     @Test
@@ -31,7 +31,7 @@ public final class StaleMateTest {
 
         final Board board = builder.build();
         assertFalse(board.currentPlayer().isInStalemate());
-        final MoveTransition t1 = board.currentPlayer().makeMove(MoveFactory.createMove(board, BoardTest.getPieceAtPosition(board, "e4"), BoardUtils.getCoordinateAtPosition("f5")));
+        final MoveTransition t1 = board.currentPlayer().makeMove(MoveFactory.createMove(board, BoardUtils.getPieceAtPosition(board, "e4"), BoardUtils.getCoordinateAtPosition("f5")));
         assertTrue(t1.getMoveStatus().isDone());
         assertTrue(t1.getLatestBoard().currentPlayer().isInStalemate());
         assertFalse(t1.getLatestBoard().currentPlayer().isInCheck());
@@ -49,7 +49,7 @@ public final class StaleMateTest {
 
         final Board board = builder.build();
         assertFalse(board.currentPlayer().isInStalemate());
-        final MoveTransition t1 = board.currentPlayer().makeMove(MoveFactory.createMove(board, BoardTest.getPieceAtPosition(board, "c5"), BoardUtils.getCoordinateAtPosition("c6")));
+        final MoveTransition t1 = board.currentPlayer().makeMove(MoveFactory.createMove(board, BoardUtils.getPieceAtPosition(board, "c5"), BoardUtils.getCoordinateAtPosition("c6")));
         assertTrue(t1.getMoveStatus().isDone());
         assertTrue(t1.getLatestBoard().currentPlayer().isInStalemate());
         assertFalse(t1.getLatestBoard().currentPlayer().isInCheck());
@@ -68,7 +68,7 @@ public final class StaleMateTest {
 
         final Board board = builder.build();
         assertFalse(board.currentPlayer().isInStalemate());
-        final MoveTransition t1 = board.currentPlayer().makeMove(MoveFactory.createMove(board, BoardTest.getPieceAtPosition(board, "a6"), BoardUtils.getCoordinateAtPosition("a7")));
+        final MoveTransition t1 = board.currentPlayer().makeMove(MoveFactory.createMove(board, BoardUtils.getPieceAtPosition(board, "a6"), BoardUtils.getCoordinateAtPosition("a7")));
         assertTrue(t1.getMoveStatus().isDone());
         assertTrue(t1.getLatestBoard().currentPlayer().isInStalemate());
         assertFalse(t1.getLatestBoard().currentPlayer().isInCheck());

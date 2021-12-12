@@ -1,9 +1,10 @@
 package com.mygdx.game.chess.engine.board;
 
+import static com.mygdx.game.chess.engine.board.BoardUtils.getBoardNumStream;
+import static com.mygdx.game.chess.engine.board.Move.MoveFactory;
+
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
-import com.mygdx.game.chess.engine.player.BlackPlayer;
-import com.mygdx.game.chess.engine.player.Player;
-import com.mygdx.game.chess.engine.player.WhitePlayer;
 import com.mygdx.game.chess.engine.pieces.Bishop;
 import com.mygdx.game.chess.engine.pieces.King;
 import com.mygdx.game.chess.engine.pieces.Knight;
@@ -11,20 +12,17 @@ import com.mygdx.game.chess.engine.pieces.Pawn;
 import com.mygdx.game.chess.engine.pieces.Piece;
 import com.mygdx.game.chess.engine.pieces.Queen;
 import com.mygdx.game.chess.engine.pieces.Rook;
+import com.mygdx.game.chess.engine.player.BlackPlayer;
+import com.mygdx.game.chess.engine.player.Player;
+import com.mygdx.game.chess.engine.player.WhitePlayer;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import static com.mygdx.game.chess.engine.board.Move.MoveFactory;
+import java.util.stream.Collectors;
 
 public final class Board {
 
-    private final List<Tile> gameBoard;
-    private final Collection<Piece> whitePieces, blackPieces;
+    private final ImmutableList<Tile> gameBoard;
+    private final ImmutableList<Piece> whitePieces, blackPieces;
 
     private final WhitePlayer whitePlayer;
     private final BlackPlayer blackPlayer;
@@ -41,8 +39,8 @@ public final class Board {
         this.blackPieces = calculateActivePieces(builder, League.BLACK);
 
         this.enPassantPawn = builder.enPassantPawn;
-        final Collection<Move> whiteStandardLegalMoves = this.calculateLegalMoves(this.whitePieces);
-        final Collection<Move> blackStandardLegalMoves = this.calculateLegalMoves(this.blackPieces);
+        final ImmutableList<Move> whiteStandardLegalMoves = this.calculateLegalMoves(this.whitePieces);
+        final ImmutableList<Move> blackStandardLegalMoves = this.calculateLegalMoves(this.blackPieces);
 
         this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves, builder.whiteMinute, builder.whiteSecond, builder.whiteMillisecond);
         this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves, builder.blackMinute, builder.blackSecond, builder.blackMillisecond);
@@ -53,58 +51,12 @@ public final class Board {
         this.transitionMove = builder.transitionMove != null ? builder.transitionMove : MoveFactory.getNullMove();
     }
 
-    public int getMoveCount() { return this.moveCount; }
-    public Player currentPlayer() {
-        return this.currentPlayer;
-    }
-    public Player whitePlayer() {
-        return this.whitePlayer;
-    }
-    public Player blackPlayer() {
-        return this.blackPlayer;
-    }
-    public Collection<Piece> getWhitePieces() {
-        return this.whitePieces;
-    }
-    public Collection<Piece> getBlackPieces() { return this.blackPieces; }
-    public Pawn getEnPassantPawn() { return this.enPassantPawn; }
-    public Tile getTile(final int tileCoordinate) {
-        return this.gameBoard.get(tileCoordinate);
-    }
-    public Move getTransitionMove() { return this.transitionMove; }
-
-    public Collection<Piece> getAllPieces() {
-        final Collection<Piece> activePieces = new ArrayList<>(this.whitePieces);
-        activePieces.addAll(this.blackPieces);
-        return Collections.unmodifiableCollection(activePieces);
+    private static ImmutableList<Piece> calculateActivePieces(final Builder builder, final League league) {
+        return ImmutableList.copyOf(builder.boardConfig.values().parallelStream().filter(piece -> piece.getLeague() == league).collect(Collectors.toList()));
     }
 
-    private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
-        final List<Move> legalMoves = new ArrayList<>();
-        for (final Piece piece : pieces) {
-            legalMoves.addAll(piece.calculateLegalMoves(this));
-        }
-        return Collections.unmodifiableList(legalMoves);
-    }
-
-    private static Collection<Piece> calculateActivePieces(final Builder builder, final League league) {
-        final List<Piece> activePieces = new ArrayList<>();
-        for (final Piece piece : builder.boardConfig.values()) {
-            if (piece.getLeague() == league) {
-                activePieces.add(piece);
-            }
-        }
-        return Collections.unmodifiableList(activePieces);
-    }
-
-    public static List<Tile> createGameBoard(final Builder builder) {
-        final Tile[] tiles = new Tile[BoardUtils.NUM_TILES];
-
-        for (int i = 0; i < BoardUtils.NUM_TILES; i++) {
-            tiles[i] = Tile.createTile(i, builder.boardConfig.get(i));
-        }
-        //PARSE array as list
-        return Collections.unmodifiableList(Arrays.asList(tiles));
+    public static ImmutableList<Tile> createGameBoard(final Builder builder) {
+        return ImmutableList.copyOf(getBoardNumStream().map(i -> Tile.createTile(i, builder.boardConfig.get(i))).collect(Collectors.toList()));
     }
 
     public static Board createStandardBoardForMoveHistory(final String[] whiteTimer, final String[] blackTimer) {
@@ -132,12 +84,16 @@ public final class Board {
                 .setPiece(new Knight(League.WHITE, 57))
                 .setPiece(new Bishop(League.WHITE, 58))
                 .setPiece(new Queen(League.WHITE, 59))
-                .setPiece(new King(League.WHITE, 60,true, true))
+                .setPiece(new King(League.WHITE, 60, true, true))
                 .setPiece(new Bishop(League.WHITE, 61))
                 .setPiece(new Knight(League.WHITE, 62))
                 .setPiece(new Rook(League.WHITE, 63));
         //build the board
         return builder.build();
+    }
+
+    public static Board createStandardBoardWithDefaultTimer() {
+        return createStandardBoard(BoardUtils.DEFAULT_TIMER_MINUTE, BoardUtils.DEFAULT_TIMER_SECOND, BoardUtils.DEFAULT_TIMER_MILLISECOND);
     }
 
     public static Board createStandardBoard(final int minute, final int second, final int millisecond) {
@@ -165,12 +121,56 @@ public final class Board {
                 .setPiece(new Knight(League.WHITE, 57))
                 .setPiece(new Bishop(League.WHITE, 58))
                 .setPiece(new Queen(League.WHITE, 59))
-                .setPiece(new King(League.WHITE, 60,true, true))
+                .setPiece(new King(League.WHITE, 60, true, true))
                 .setPiece(new Bishop(League.WHITE, 61))
                 .setPiece(new Knight(League.WHITE, 62))
                 .setPiece(new Rook(League.WHITE, 63));
         //build the board
         return builder.build();
+    }
+
+    public int getMoveCount() {
+        return this.moveCount;
+    }
+
+    public Player currentPlayer() {
+        return this.currentPlayer;
+    }
+
+    public Player whitePlayer() {
+        return this.whitePlayer;
+    }
+
+    public Player blackPlayer() {
+        return this.blackPlayer;
+    }
+
+    public ImmutableList<Piece> getWhitePieces() {
+        return this.whitePieces;
+    }
+
+    public ImmutableList<Piece> getBlackPieces() {
+        return this.blackPieces;
+    }
+
+    public Pawn getEnPassantPawn() {
+        return this.enPassantPawn;
+    }
+
+    public Tile getTile(final int tileCoordinate) {
+        return this.gameBoard.get(tileCoordinate);
+    }
+
+    public Move getTransitionMove() {
+        return this.transitionMove;
+    }
+
+    public ImmutableList<Piece> getAllPieces() {
+        return new ImmutableList.Builder<Piece>().addAll(this.whitePieces).addAll(this.blackPieces).build();
+    }
+
+    private ImmutableList<Move> calculateLegalMoves(final ImmutableList<Piece> pieces) {
+        return ImmutableList.copyOf(pieces.parallelStream().flatMap(piece -> piece.calculateLegalMoves(this).stream()).collect(Collectors.toList()));
     }
 
     public static final class Builder {
@@ -202,11 +202,17 @@ public final class Board {
             return this;
         }
 
-        public Board build() { return new Board(this); }
+        public Board build() {
+            return new Board(this);
+        }
 
-        public void setTransitionMove(final Move transitionMove) { this.transitionMove = transitionMove; }
+        public void setTransitionMove(final Move transitionMove) {
+            this.transitionMove = transitionMove;
+        }
 
-        public int moveCount() { return this.moveCount; }
+        public int moveCount() {
+            return this.moveCount;
+        }
 
         public Builder updateWhiteTimer(final int whiteMinute, final int whiteSecond, final int whiteMillisecond) {
             this.whiteMinute = whiteMinute;

@@ -7,11 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.mygdx.game.gui.GuiUtils;
-import com.mygdx.game.gui.gameScreen.GameScreen;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.pieces.Piece;
+import com.mygdx.game.gui.GuiUtils;
+import com.mygdx.game.gui.gameScreen.GameScreen;
 
 import java.util.List;
 
@@ -34,15 +34,13 @@ public final class PawnPromotionInterface {
                 .updateWhiteTimer(pawnPromotion.getBoard().whitePlayer().getMinute(), pawnPromotion.getBoard().whitePlayer().getSecond(), pawnPromotion.getBoard().whitePlayer().getMillisecond())
                 .updateBlackTimer(pawnPromotion.getBoard().blackPlayer().getMinute(), pawnPromotion.getBoard().blackPlayer().getSecond(), pawnPromotion.getBoard().blackPlayer().getMillisecond());
 
-        for (final Piece piece : pawnPromotion.getBoard().currentPlayer().getActivePieces()) {
+        pawnPromotion.getBoard().currentPlayer().getActivePieces().forEach(piece -> {
             if (!pawnPromotion.getPromotedPawn().equals(piece)) {
                 builder.setPiece(piece);
             }
-        }
+        });
 
-        for (final Piece piece : pawnPromotion.getBoard().currentPlayer().getOpponent().getActivePieces()) {
-            builder.setPiece(piece);
-        }
+        pawnPromotion.getBoard().currentPlayer().getOpponent().getActivePieces().forEach(builder::setPiece);
 
         builder.setPiece(pawnPromotion.getPromotedPiece().movedPiece(pawnPromotion));
         builder.setTransitionMove(pawnPromotion);

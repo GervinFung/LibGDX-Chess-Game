@@ -43,7 +43,9 @@ public final class WelcomeScreen implements Screen {
         this.stage.addActor(table);
     }
 
-    public Stage getStage() { return this.stage; }
+    public Stage getStage() {
+        return this.stage;
+    }
 
     private TextButton startGameButton(final ChessGame chessGame) {
         final TextButton textButton = new TextButton("Start Game", GuiUtils.UI_SKIN);
@@ -109,7 +111,9 @@ public final class WelcomeScreen implements Screen {
     }
 
     @Override
-    public void resize (final int width, final int height) { this.stage.getViewport().update(width, height, true); }
+    public void resize(final int width, final int height) {
+        this.stage.getViewport().update(width, height, true);
+    }
 
     @Override
     public void dispose() {
@@ -118,12 +122,19 @@ public final class WelcomeScreen implements Screen {
     }
 
     @Deprecated
-    public void show() {}
+    public void show() {
+    }
+
     @Deprecated
-    public void pause() {}
+    public void pause() {
+    }
+
     @Deprecated
-    public void resume() {}
+    public void resume() {
+    }
+
     @Deprecated
-    public void hide() {}
+    public void hide() {
+    }
 
 }

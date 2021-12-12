@@ -1,9 +1,9 @@
 package com.mygdx.game.gui.board;
 
-import com.mygdx.game.gui.GuiUtils;
-import com.mygdx.game.gui.gameScreen.GameScreen;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
+import com.mygdx.game.gui.GuiUtils;
+import com.mygdx.game.gui.gameScreen.GameScreen;
 
 public final class GameProps {
 
@@ -53,7 +53,7 @@ public final class GameProps {
             public boolean isHighlightMove() {
                 return true;
             }
-        }, NO_HIGHLIGHT_MOVE{
+        }, NO_HIGHLIGHT_MOVE {
             @Override
             public boolean isHighlightMove() {
                 return false;
@@ -102,7 +102,7 @@ public final class GameProps {
             public void drawBoard(final GameScreen gameScreen, final com.mygdx.game.gui.board.GameBoard gameBoard, final Board chessBoard, final com.mygdx.game.gui.board.GameBoard.DisplayOnlyBoard displayOnlyBoard) {
                 gameBoard.clearChildren();
                 displayOnlyBoard.clearChildren();
-                for (int i = 0; i < BoardUtils.NUM_TILES; i+=1) {
+                for (int i = 0; i < BoardUtils.NUM_TILES; i += 1) {
                     if (i % 8 == 0) {
                         gameBoard.row();
                         displayOnlyBoard.row();
@@ -115,17 +115,23 @@ public final class GameProps {
                 gameBoard.validate();
                 displayOnlyBoard.validate();
             }
+
             @Override
-            public BoardDirection opposite() { return FLIP_BOARD; }
+            public BoardDirection opposite() {
+                return FLIP_BOARD;
+            }
+
             @Override
-            public boolean flipped() { return false; }
+            public boolean flipped() {
+                return false;
+            }
         },
         FLIP_BOARD {
             @Override
             public void drawBoard(final GameScreen gameScreen, final com.mygdx.game.gui.board.GameBoard gameBoard, final Board chessBoard, final com.mygdx.game.gui.board.GameBoard.DisplayOnlyBoard displayOnlyBoard) {
                 gameBoard.clearChildren();
                 displayOnlyBoard.clearChildren();
-                for (int i = BoardUtils.NUM_TILES - 1; i >= 0; i-=1) {
+                for (int i = BoardUtils.NUM_TILES - 1; i >= 0; i -= 1) {
                     gameBoard.add(new com.mygdx.game.gui.board.TileActor(gameScreen, gameBoard.textureRegion(chessBoard, i), i)).size(GuiUtils.TILE_SIZE);
                     final com.mygdx.game.gui.board.TileActor.DisplayOnlyTile tile = new TileActor.DisplayOnlyTile(i);
                     tile.repaint(gameBoard, chessBoard, gameScreen.getDisplayOnlyBoard());
@@ -138,13 +144,22 @@ public final class GameProps {
                 gameBoard.validate();
                 displayOnlyBoard.validate();
             }
+
             @Override
-            public BoardDirection opposite() { return NORMAL_BOARD; }
+            public BoardDirection opposite() {
+                return NORMAL_BOARD;
+            }
+
             @Override
-            public boolean flipped() { return true; }
+            public boolean flipped() {
+                return true;
+            }
         };
+
         public abstract BoardDirection opposite();
+
         public abstract boolean flipped();
+
         public abstract void drawBoard(final GameScreen gameScreen, final com.mygdx.game.gui.board.GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard);
     }
 }

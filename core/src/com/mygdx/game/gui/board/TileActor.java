@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.mygdx.game.gui.GuiUtils;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.MoveTransition;
-import com.mygdx.game.gui.gameScreen.GameScreen;
 import com.mygdx.game.chess.engine.pieces.Piece;
+import com.mygdx.game.gui.GuiUtils;
+import com.mygdx.game.gui.gameScreen.GameScreen;
 
 public final class TileActor extends Image {
 
@@ -23,9 +23,11 @@ public final class TileActor extends Image {
             public void clicked(final InputEvent event, final float x, final float y) {
                 try {
                     super.clicked(event, x, y);
-                    if (gameScreen.getGameBoard().isGameEnd() || gameScreen.getGameBoard().getArtificialIntelligenceWorking()) { return ; }
+                    if (gameScreen.getGameBoard().isGameEnd() || gameScreen.getGameBoard().getArtificialIntelligenceWorking()) {
+                        return;
+                    }
 
-                    if (gameScreen.getGameBoard().getHumanPiece() ==  null) {
+                    if (gameScreen.getGameBoard().getHumanPiece() == null) {
                         gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
                         if (gameScreen.getChessBoard().getTile(tileID).getPiece().getLeague() == gameScreen.getChessBoard().currentPlayer().getLeague()) {
                             gameScreen.getGameBoard().updateHumanPiece(gameScreen.getChessBoard().getTile(tileID).getPiece());
@@ -45,7 +47,7 @@ public final class TileActor extends Image {
                                 gameScreen.getGameBoard().updateHumanMove(move);
                                 if (move.isPromotionMove()) {
                                     //display pawn promotion interface
-                                    new PawnPromotionInterface().startLibGDXPromotion(gameScreen, (Move.PawnPromotion)move);
+                                    new PawnPromotionInterface().startLibGDXPromotion(gameScreen, (Move.PawnPromotion) move);
                                 } else {
                                     gameScreen.getGameBoard().drawBoard(gameScreen, gameScreen.getChessBoard(), gameScreen.getDisplayOnlyBoard());
                                     gameScreen.getMoveHistory().getMoveLog().addMove(move);
@@ -68,7 +70,8 @@ public final class TileActor extends Image {
                             gameScreen.getGameBoard().updateHumanPiece(null);
                         }
                     }
-                } catch (final NullPointerException ignored) {}
+                } catch (final NullPointerException ignored) {
+                }
             }
         });
     }
@@ -120,7 +123,7 @@ public final class TileActor extends Image {
         }
 
         public void repaint(final GameBoard gameBoard, final Board chessBoard, final GameBoard.DisplayOnlyBoard displayOnlyBoard) {
-            if (chessBoard.currentPlayer().isInCheck() &&  chessBoard.currentPlayer().getPlayerKing().getPiecePosition() == this.tileID) {
+            if (chessBoard.currentPlayer().isInCheck() && chessBoard.currentPlayer().getPlayerKing().getPiecePosition() == this.tileID) {
                 this.setColor(Color.RED);
             } else if (gameBoard.getHumanMove() != null && gameBoard.isHighlightPreviousMove()) {
                 this.setColor(this.getHumanMoveColor(gameBoard, displayOnlyBoard));

@@ -6,11 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.gui.GuiUtils;
 import com.mygdx.game.gui.board.GameProps;
 import com.mygdx.game.gui.gameScreen.GameScreen;
 
-import java.util.Arrays;
 import java.util.List;
 
 public final class GameOption extends TextButton {
@@ -32,10 +32,8 @@ public final class GameOption extends TextButton {
         private GameOptionDialog(final GameScreen gameScreen) {
             super("Game Option", GuiUtils.UI_SKIN);
             this.getContentTable().padTop(10);
-            final List<GameOptionCheckBox> gameOptionCheckBoxList = Arrays.asList(new HighlightLegalMove(gameScreen), new ShowPreviousMove(gameScreen), new PauseTimer(gameScreen));
-            for (final GameOptionCheckBox gameOptionCheckBox : gameOptionCheckBoxList) {
-                this.getContentTable().add(gameOptionCheckBox).align(Align.left).padBottom(20).row();
-            }
+            final ImmutableList<GameOptionCheckBox> gameOptionCheckBoxList = ImmutableList.of(new HighlightLegalMove(gameScreen), new ShowPreviousMove(gameScreen), new PauseTimer(gameScreen));
+            gameOptionCheckBoxList.forEach(gameOptionCheckBox -> this.getContentTable().add(gameOptionCheckBox).align(Align.left).padBottom(20).row());
             this.getContentTable().add(new OKButton(gameScreen, this, gameOptionCheckBoxList)).align(Align.left);
             this.getContentTable().add(new CancelButton(gameScreen, this)).align(Align.right);
         }
@@ -98,7 +96,7 @@ public final class GameOption extends TextButton {
 
     private static final class ShowPreviousMove extends GameOptionCheckBox {
 
-        protected ShowPreviousMove (final GameScreen gameScreen) {
+        protected ShowPreviousMove(final GameScreen gameScreen) {
             super(gameScreen, "Highlight Previous Move", true);
         }
 

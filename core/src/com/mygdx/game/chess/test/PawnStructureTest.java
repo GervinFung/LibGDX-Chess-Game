@@ -1,5 +1,8 @@
 package com.mygdx.game.chess.test;
 
+import static com.mygdx.game.chess.engine.board.Board.Builder;
+import static org.testng.Assert.assertEquals;
+
 import com.mygdx.game.chess.engine.FEN.FenUtilities;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
@@ -8,10 +11,8 @@ import com.mygdx.game.chess.engine.pieces.King;
 import com.mygdx.game.chess.engine.pieces.Pawn;
 import com.mygdx.game.chess.engine.player.ArtificialIntelligence.PawnStructureAnalyse;
 import com.mygdx.game.chess.engine.player.ArtificialIntelligence.StandardBoardEvaluation;
-import org.junit.Test;
 
-import static com.mygdx.game.chess.engine.board.Board.Builder;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public final class PawnStructureTest {
     private final PawnStructureAnalyse pawnStructureAnalyzer = new PawnStructureAnalyse();

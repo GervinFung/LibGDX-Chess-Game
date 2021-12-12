@@ -28,10 +28,13 @@ public final class GamePreference extends TextButton {
             public void clicked(final InputEvent event, final float x, final float y) {
                 gameScreen.getGameTimerPanel().continueTimer(false);
                 gamePreferenceDialog.show(gameScreen.getStage());
-            }});
+            }
+        });
     }
 
-    public void detectUndoMoveKeyPressed(final GameScreen gameScreen) { this.gamePreferenceDialog.detectUndoMoveKeyPressed(gameScreen); }
+    public void detectUndoMoveKeyPressed(final GameScreen gameScreen) {
+        this.gamePreferenceDialog.detectUndoMoveKeyPressed(gameScreen);
+    }
 
     private static final class GamePreferenceDialog extends Dialog {
 
@@ -49,7 +52,9 @@ public final class GamePreference extends TextButton {
             this.getContentTable().add(new CancelButton(gameScreen, this)).width(GuiUtils.WIDTH);
         }
 
-        private void detectUndoMoveKeyPressed(final GameScreen gameScreen) { this.undoButton.detectUndoMoveKeyPressed(gameScreen); }
+        private void detectUndoMoveKeyPressed(final GameScreen gameScreen) {
+            this.undoButton.detectUndoMoveKeyPressed(gameScreen);
+        }
     }
 
     private static final class ImportFEN extends TextButton {
@@ -146,7 +151,7 @@ public final class GamePreference extends TextButton {
         //Otherwise, both player is human, undo that player move only
         private void undoPlayerMove(final GameScreen gameScreen) {
             if (gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer())
-                && !gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer().getOpponent())) {
+                    && !gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer().getOpponent())) {
                 gameScreen.getGameBoard().getArtificialIntelligence().setStopAI(true);
                 this.undoMove(gameScreen);
             } else if (!gameScreen.getGameBoard().isAIPlayer(gameScreen.getChessBoard().currentPlayer())

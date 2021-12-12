@@ -1,5 +1,9 @@
 package com.mygdx.game.chess.engine.pieces;
 
+import static com.mygdx.game.chess.engine.board.Move.MajorAttackMove;
+import static com.mygdx.game.chess.engine.board.Move.MajorMove;
+
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
@@ -7,22 +11,22 @@ import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.Tile;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import static com.mygdx.game.chess.engine.board.Move.*;
-
-public final class Bishop extends Piece{
+public final class Bishop extends Piece {
 
     private static final int[] MOVE_VECTOR_COORDINATE = {-9, -7, 7, 9};
 
-    public Bishop(final League league, final int piecePosition) { super(PieceType.BISHOP, piecePosition, league, true); }
+    public Bishop(final League league, final int piecePosition) {
+        super(PieceType.BISHOP, piecePosition, league, true);
+    }
 
-    public Bishop(final League league, final int piecePosition, final boolean isFirstMove) { super(PieceType.BISHOP, piecePosition, league, isFirstMove); }
+    public Bishop(final League league, final int piecePosition, final boolean isFirstMove) {
+        super(PieceType.BISHOP, piecePosition, league, isFirstMove);
+    }
 
     @Override
-    public Collection<Move> calculateLegalMoves(final Board board) {
+    public ImmutableList<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
         for (final int CoordinateOFFSET : MOVE_VECTOR_COORDINATE) {
 
@@ -31,7 +35,7 @@ public final class Bishop extends Piece{
             while (BoardUtils.isValidTileCoordinate(destinationCoordinate)) {
 
                 if (isEighthColumnExclusion(destinationCoordinate, CoordinateOFFSET) ||
-                    isFirstColumnExclusion(destinationCoordinate, CoordinateOFFSET)) {
+                        isFirstColumnExclusion(destinationCoordinate, CoordinateOFFSET)) {
                     break;
                 }
 
@@ -52,11 +56,13 @@ public final class Bishop extends Piece{
                 }
             }
         }
-        return Collections.unmodifiableList(legalMoves);
+        return ImmutableList.copyOf(legalMoves);
     }
 
     @Override
-    public Bishop movedPiece(final Move move) { return new Bishop(move.getMovedPiece().getLeague(), move.getDestinationCoordinate(), false); }
+    public Bishop movedPiece(final Move move) {
+        return new Bishop(move.getMovedPiece().getLeague(), move.getDestinationCoordinate(), false);
+    }
 
     @Override
     public String toString() {

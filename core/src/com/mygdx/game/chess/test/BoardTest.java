@@ -1,12 +1,19 @@
 package com.mygdx.game.chess.test;
 
+import static com.mygdx.game.chess.engine.board.Board.Builder;
+import static com.mygdx.game.chess.engine.board.Move.MoveFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertThrows;
+
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.MoveTransition;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import com.mygdx.game.chess.engine.pieces.Bishop;
 import com.mygdx.game.chess.engine.pieces.King;
 import com.mygdx.game.chess.engine.pieces.Knight;
@@ -18,17 +25,19 @@ import com.mygdx.game.chess.engine.pieces.Rook;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import static com.mygdx.game.chess.engine.board.Board.Builder;
-import static com.mygdx.game.chess.engine.board.Move.MoveFactory;
+import java.util.stream.Collectors;
 
 public final class BoardTest {
+
+    private static Piece getPieceAtPosition(final Board board, final String position) {
+        return board.currentPlayer().getActivePieces().parallelStream().filter(piece -> piece.getPiecePosition() == BoardUtils.getCoordinateAtPosition(position)).findFirst().orElseThrow(() -> new IllegalStateException("Invalid Piece"));
+    }
+
+    private static int calculatedActivesFor(final Board board, final League league) {
+        return (int) board.getAllPieces().stream().filter(piece -> piece.getLeague().equals(league)).count();
+    }
 
     @Test
     public void testHashCode() {
@@ -51,14 +60,10 @@ public final class BoardTest {
         assertEquals(board.currentPlayer().getOpponent().getActivePieces().size(), 16);
 
         //there should be 20 pieces which is active and has legal moves at the beginning of the board
-        final ArrayList<Piece> activeKnight = new ArrayList<>(), activePawns = new ArrayList<>();
-        for (final Piece piece : board.getAllPieces()) {
-            if (piece.calculateLegalMoves(board).size() != 0 && piece.getPieceType() == PieceType.PAWN) {
-                activePawns.add(piece);
-            } else if (piece.calculateLegalMoves(board).size() != 0 && piece.getPieceType() == PieceType.KNIGHT) {
-                activeKnight.add(piece);
-            }
-        }
+
+        final List<Piece> activePawns = board.getAllPieces().parallelStream().filter(piece -> piece.calculateLegalMoves(board).size() != 0 && piece.getPieceType() == PieceType.PAWN).collect(Collectors.toList());
+        final List<Piece> activeKnight = board.getAllPieces().parallelStream().filter(piece -> piece.calculateLegalMoves(board).size() != 0 && piece.getPieceType() == PieceType.KNIGHT).collect(Collectors.toList());
+
         assertEquals(activePawns.size(), 16);
         assertEquals(activeKnight.size(), 4);
 
@@ -134,27 +139,8 @@ public final class BoardTest {
         assertFalse(board.currentPlayer().getOpponent().isQueenSideCastleCapable());
     }
 
-    protected static Piece getPieceAtPosition(final Board board, final String position) {
-        for (final Piece piece : board.currentPlayer().getActivePieces()) {
-            if (piece.getPiecePosition() == BoardUtils.getCoordinateAtPosition(position)) {
-                return piece;
-            }
-        }
-        throw new RuntimeException("Invalid Piece");
-    }
-
-    private static int calculatedActivesFor(final Board board, final League league) {
-        int count = 0;
-        for (final Piece piece : board.getAllPieces()) {
-            if (piece.getLeague().equals(league)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     @Test
-    public void testAlgebreicNotation() {
+    public void testAlgebraicNotation() {
         assertEquals(BoardUtils.getPositionAtCoordinate(0), "a8");
         assertEquals(BoardUtils.getPositionAtCoordinate(1), "b8");
         assertEquals(BoardUtils.getPositionAtCoordinate(2), "c8");
@@ -176,36 +162,38 @@ public final class BoardTest {
     }
 
     //RunTimeException is thrown when there is no king
-    @Test(expected=RuntimeException.class)
+    @Test
     public void testInvalidBoard() {
+        assertThrows(RuntimeException.class, () -> {
+            final Builder builder = new Builder(0, League.WHITE, null);
+            // Black Layout
+            builder.setPiece(new Rook(League.BLACK, 0))
+                    .setPiece(new Knight(League.BLACK, 1))
+                    .setPiece(new Bishop(League.BLACK, 2))
+                    .setPiece(new Queen(League.BLACK, 3))
+                    //No King
+                    .setPiece(new Bishop(League.BLACK, 5))
+                    .setPiece(new Knight(League.BLACK, 6))
+                    .setPiece(new Rook(League.BLACK, 7));
+            for (int i = 8; i < 16; i++) {
+                builder.setPiece(new Pawn(League.BLACK, i));
+            }
+            // White Layout
+            for (int i = 48; i < 56; i++) {
+                builder.setPiece(new Pawn(League.WHITE, i));
+            }
+            builder.setPiece(new Rook(League.WHITE, 56))
+                    .setPiece(new Knight(League.WHITE, 57))
+                    .setPiece(new Bishop(League.WHITE, 58))
+                    .setPiece(new Queen(League.WHITE, 59))
+                    //No King
+                    .setPiece(new Bishop(League.WHITE, 61))
+                    .setPiece(new Knight(League.WHITE, 62))
+                    .setPiece(new Rook(League.WHITE, 63))
+                    //build the board
+                    .build();
+        });
 
-        final Builder builder = new Builder(0, League.WHITE, null);
-        // Black Layout
-        builder.setPiece(new Rook(League.BLACK, 0))
-        .setPiece(new Knight(League.BLACK, 1))
-        .setPiece(new Bishop(League.BLACK, 2))
-        .setPiece(new Queen(League.BLACK, 3))
-        //No King
-        .setPiece(new Bishop(League.BLACK, 5))
-        .setPiece(new Knight(League.BLACK, 6))
-        .setPiece(new Rook(League.BLACK, 7));
-        for (int i = 8; i < 16; i++) {
-            builder.setPiece(new Pawn(League.BLACK, i));
-        }
-        // White Layout
-        for (int i = 48; i < 56; i++) {
-            builder.setPiece(new Pawn(League.WHITE, i));
-        }
-        builder.setPiece(new Rook(League.WHITE, 56))
-        .setPiece(new Knight(League.WHITE, 57))
-        .setPiece(new Bishop(League.WHITE, 58))
-        .setPiece(new Queen(League.WHITE, 59))
-        //No King
-        .setPiece(new Bishop(League.WHITE, 61))
-        .setPiece(new Knight(League.WHITE, 62))
-        .setPiece(new Rook(League.WHITE, 63))
-        //build the board
-        .build();
     }
 
     @Test

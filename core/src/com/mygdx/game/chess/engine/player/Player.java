@@ -1,43 +1,38 @@
 package com.mygdx.game.chess.engine.player;
 
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
-import com.mygdx.game.chess.engine.board.MoveTransition;
-import com.mygdx.game.chess.engine.board.MoveStatus;
 import com.mygdx.game.chess.engine.board.Move;
+import com.mygdx.game.chess.engine.board.MoveStatus;
+import com.mygdx.game.chess.engine.board.MoveTransition;
 import com.mygdx.game.chess.engine.board.Tile;
 import com.mygdx.game.chess.engine.pieces.King;
 import com.mygdx.game.chess.engine.pieces.Piece;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public abstract class Player {
 
     private final Board board;
     private final King playerKing;
-    private final Collection<Move> legalMoves;
+    private final ImmutableList<Move> legalMoves;
     private final boolean isInCheck;
-    private final boolean noTimer;
     private int minute, second, millisecond;
 
-    public Player(final Board board, final Collection<Move> legalMoves, final Collection<Move> opponentLegalMoves, final int minute, final int second, final int millisecond) {
+    public Player(final Board board, final ImmutableList<Move> legalMoves, final ImmutableList<Move> opponentLegalMoves, final int minute, final int second, final int millisecond) {
         this.board = board;
         this.playerKing = this.establishKing();
-        final List<Move> legal = new ArrayList<>(legalMoves);
         this.isInCheck = !Player.calculateAttacksOnTile(this.playerKing.getPiecePosition(), opponentLegalMoves).isEmpty();
-        //for ai
-        legal.addAll(calculateKingCastles(opponentLegalMoves));
-        this.legalMoves = legal;
+        this.legalMoves = ImmutableList.<Move>builder().addAll(legalMoves).addAll(calculateKingCastles(opponentLegalMoves)).build();
         this.minute = minute;
         this.second = second;
         this.millisecond = millisecond;
-        this.noTimer = minute == -1;
     }
 
-    public final boolean isNoTimer() { return this.noTimer; }
+    public final boolean isNoTimer() {
+        return this.minute == -1;
+    }
 
     public final void countDown() {
         if (this.millisecond == 0) {
@@ -54,43 +49,43 @@ public abstract class Player {
         this.millisecond -= 1;
     }
 
-    public final Board getBoard() { return this.board; }
+    public final Board getBoard() {
+        return this.board;
+    }
 
-    public final int getMinute() { return this.minute; }
+    public final int getMinute() {
+        return this.minute;
+    }
 
-    public final int getSecond() { return this.second; }
+    public final int getSecond() {
+        return this.second;
+    }
 
-    public final int getMillisecond() { return this.millisecond; }
+    public final int getMillisecond() {
+        return this.millisecond;
+    }
 
-    public final boolean isTimeOut() { return this.minute == 0 && this.second == 0 && this.millisecond == 0; }
+    public final boolean isTimeOut() {
+        return this.minute == 0 && this.second == 0 && this.millisecond == 0;
+    }
 
     public final King getPlayerKing() {
         return this.playerKing;
     }
 
-    public final Collection<Move> getLegalMoves() { return Collections.unmodifiableCollection(this.legalMoves); }
+    public final ImmutableList<Move> getLegalMoves() {
+        return this.legalMoves;
+    }
 
-    public static List<Move> calculateAttacksOnTile(final int piecePosition, final Collection<Move> moves) {
-        final List<Move> attackMove = new ArrayList<>();
-
-        for (final Move move : moves) {
-            if(piecePosition == move.getDestinationCoordinate()) {
-                attackMove.add(move);
-            }
-        }
-        return Collections.unmodifiableList(attackMove);
+    public static ImmutableList<Move> calculateAttacksOnTile(final int piecePosition, final ImmutableList<Move> moves) {
+        return ImmutableList.copyOf(moves.parallelStream().filter(move -> piecePosition == move.getDestinationCoordinate()).collect(Collectors.toList()));
     }
 
     private King establishKing() {
-        for (final Piece piece : getActivePieces()) {
-            if (piece.getPieceType().isKing()) {
-                return (King) piece;
-            }
-        }
-        throw new RuntimeException("Invalid board");
+        return ((King)this.getActivePieces().parallelStream().filter(piece -> piece.getPieceType().isKing()).findFirst().orElseThrow(() -> new IllegalStateException("Invalid board")));
     }
 
-    public abstract Collection<Piece> getActivePieces();
+    public abstract ImmutableList<Piece> getActivePieces();
 
     public abstract League getLeague();
 
@@ -101,57 +96,62 @@ public abstract class Player {
     }
 
     public final boolean isInCheckmate() {
-        return this.isInCheck && noEscapeMoves();
+        return this.isInCheck && this.noEscapeMoves();
     }
 
-    public final boolean isInStalemate() { return !this.isInCheck && noEscapeMoves(); }
+    public final boolean isInStalemate() {
+        final ImmutableList<Piece> activePieces = this.getActivePieces();
+        final ImmutableList<Piece> opponentActivePieces = this.getOpponent().getActivePieces();
+        if (activePieces.size() == 1 && opponentActivePieces.size() == 1) {
+            if (activePieces.get(0) instanceof King && opponentActivePieces.get(0) instanceof King) {
+                return true;
+            }
+            throw new IllegalStateException("If there is only 1 active piece left, it must be king, however it is " + activePieces + " and " + opponentActivePieces);
+        }
+        this.getOpponent().getActivePieces();
+        return !this.isInCheck && this.noEscapeMoves();
+    }
 
-    protected abstract Collection<Move> calculateKingCastles(final Collection<Move> opponentLegals);
+    protected abstract Move.KingSideCastleMove getKingSideCastleMove(final ImmutableList<Move> opponentLegals);
+    protected abstract Move.QueenSideCastleMove getQueenSideCastleMove(final ImmutableList<Move> opponentLegals);
+
+    public abstract ImmutableList<Move> calculateKingCastles(final ImmutableList<Move> opponentLegals);
 
     public final boolean isCastled() {
         return this.playerKing.isCastled();
     }
 
     public final boolean isKingSideCastleCapable() {
-        final Tile rookTile = board.getTile(this.getLeague().isWhite() ? 63 : 7);
-        if (!rookTile.isTileOccupied() || this.playerKing.isCastled()) {
-            return false;
-        }
-        return rookTile.getPiece().isFirstMove();
+        final Tile rookTile = this.board.getTile(this.getLeague().isWhite() ? 63 : 7);
+        return !(!rookTile.isTileOccupied() || this.playerKing.isCastled()) && rookTile.getPiece().isFirstMove();
     }
 
     public final boolean isQueenSideCastleCapable() {
-        final Tile rookTile = board.getTile(this.getLeague().isWhite() ? 56 : 0);
-        if (!rookTile.isTileOccupied() || this.playerKing.isCastled()) {
-            return false;
-        }
-        return rookTile.getPiece().isFirstMove();
+        final Tile rookTile = this.board.getTile(this.getLeague().isWhite() ? 56 : 0);
+        return !(!rookTile.isTileOccupied() || this.playerKing.isCastled()) && rookTile.getPiece().isFirstMove();
     }
 
     protected final boolean noEscapeMoves() {
-        for (final Move move : this.legalMoves) {
-            final MoveTransition transition = makeMove(move);
-
-            if (transition.getMoveStatus().isDone()) {
-                return false;
-            }
-        }
-        return true;
+        return this.legalMoves.parallelStream().noneMatch(move -> this.makeMove(move).getMoveStatus().isDone());
     }
 
     public final MoveTransition makeMove(final Move move) {
 
         final Board transitionBoard = move.execute();
         if (transitionBoard != null) {
-            final Collection<Move> currentPlayerLegals = transitionBoard.currentPlayer().getLegalMoves();
-            final List<Move> kingAttacks = Player.calculateAttacksOnTile(transitionBoard.currentPlayer().getOpponent().getPlayerKing().getPiecePosition(), currentPlayerLegals);
+            final ImmutableList<Move> currentPlayerLegals = transitionBoard.currentPlayer().getLegalMoves();
+            final ImmutableList<Move> kingAttacks = Player.calculateAttacksOnTile(transitionBoard.currentPlayer().getOpponent().getPlayerKing().getPiecePosition(), currentPlayerLegals);
 
-            if (!kingAttacks.isEmpty()) { return new MoveTransition(board, board, MoveStatus.LEAVES_PLAYER_IN_CHECK); }
+            if (!kingAttacks.isEmpty()) {
+                return new MoveTransition(board, board, MoveStatus.LEAVES_PLAYER_IN_CHECK);
+            }
 
             return new MoveTransition(transitionBoard, board, MoveStatus.DONE);
         }
-        return new MoveTransition(null, null, MoveStatus.Illegal_Move);
+        return new MoveTransition(null, null, MoveStatus.ILLEGAL_MOVE);
     }
 
-    public final MoveTransition undoMove(final Move move) { return new MoveTransition(board, move.getBoard(), MoveStatus.DONE); }
+    public final MoveTransition undoMove(final Move move) {
+        return new MoveTransition(board, move.getBoard(), MoveStatus.DONE);
+    }
 }

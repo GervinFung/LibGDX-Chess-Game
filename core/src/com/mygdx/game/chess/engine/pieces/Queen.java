@@ -1,5 +1,9 @@
 package com.mygdx.game.chess.engine.pieces;
 
+import static com.mygdx.game.chess.engine.board.Move.MajorAttackMove;
+import static com.mygdx.game.chess.engine.board.Move.MajorMove;
+
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
@@ -7,13 +11,9 @@ import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.Tile;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import static com.mygdx.game.chess.engine.board.Move.*;
-
-public final class Queen extends Piece{
+public final class Queen extends Piece {
 
     private static final int[] MOVE_VECTOR_COORDINATE = {-9, -8, -7, -1, 1, 7, 8, 9};
 
@@ -21,10 +21,12 @@ public final class Queen extends Piece{
         super(PieceType.QUEEN, piecePosition, league, true);
     }
 
-    public Queen(final League league, final int piecePosition, final boolean isFirstMove) { super(PieceType.QUEEN, piecePosition, league, isFirstMove); }
+    public Queen(final League league, final int piecePosition, final boolean isFirstMove) {
+        super(PieceType.QUEEN, piecePosition, league, isFirstMove);
+    }
 
     @Override
-    public Collection<Move> calculateLegalMoves(final Board board) {
+    public ImmutableList<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
 
         for (final int CoordinateOFFSET : MOVE_VECTOR_COORDINATE) {
@@ -59,11 +61,13 @@ public final class Queen extends Piece{
             }
         }
 
-        return Collections.unmodifiableList(legalMoves);
+        return ImmutableList.copyOf(legalMoves);
     }
 
     @Override
-    public Queen movedPiece(Move move) { return new Queen(move.getMovedPiece().getLeague(), move.getDestinationCoordinate(), false); }
+    public Queen movedPiece(Move move) {
+        return new Queen(move.getMovedPiece().getLeague(), move.getDestinationCoordinate(), false);
+    }
 
     @Override
     public String toString() {

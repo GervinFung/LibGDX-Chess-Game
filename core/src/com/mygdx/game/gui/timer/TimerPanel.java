@@ -5,14 +5,14 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.mygdx.game.gui.GuiUtils;
 import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.player.Player;
+import com.mygdx.game.gui.GuiUtils;
 import com.mygdx.game.gui.gameScreen.GameScreen;
 
 public final class TimerPanel extends Table {
 
-    public final static int SIZE = GuiUtils.GAME_BOARD_SR_SIZE / 2;
+    public static final int SIZE = GuiUtils.GAME_BOARD_SR_SIZE / 2;
 
     private final PlayerTimerTable whitePlayerTimerTable, blackPlayerTimerTable;
     private boolean continueTimer, pauseTimerOption, noTimer;
@@ -26,8 +26,11 @@ public final class TimerPanel extends Table {
                 timerPanel.add(timerPanel.whitePlayerTimerTable).size(TimerPanel.SIZE).row();
                 timerPanel.add(timerPanel.blackPlayerTimerTable).size(TimerPanel.SIZE);
             }
+
             @Override
-            TIMER_PANEL_DIRECTION getOpposite() { return NORMAL; }
+            TIMER_PANEL_DIRECTION getOpposite() {
+                return NORMAL;
+            }
         },
         NORMAL {
             @Override
@@ -36,13 +39,21 @@ public final class TimerPanel extends Table {
                 timerPanel.add(timerPanel.blackPlayerTimerTable).size(TimerPanel.SIZE).row();
                 timerPanel.add(timerPanel.whitePlayerTimerTable).size(TimerPanel.SIZE);
             }
+
             @Override
-            TIMER_PANEL_DIRECTION getOpposite() { return FLIPPED; }
+            TIMER_PANEL_DIRECTION getOpposite() {
+                return FLIPPED;
+            }
         };
+
         abstract void flip(final TimerPanel timerPanel);
+
         abstract TIMER_PANEL_DIRECTION getOpposite();
+
         private void update(final TimerPanel timerPanel, final GameScreen gameScreen) {
-            if (gameScreen.getGameBoard().isGameEnd()) { return; }
+            if (gameScreen.getGameBoard().isGameEnd()) {
+                return;
+            }
             gameScreen.getGameBoard().displayTimeOutMessage(gameScreen.getChessBoard(), gameScreen.getStage());
             if (gameScreen.getChessBoard().currentPlayer().getLeague().isWhite()) {
                 timerPanel.whitePlayerTimerTable.updateTimer(gameScreen.getChessBoard().currentPlayer());
@@ -65,13 +76,26 @@ public final class TimerPanel extends Table {
     }
 
     //setter
-    public void setPauseTimerOption(final boolean pauseTimerOption) { this.pauseTimerOption = pauseTimerOption; }
-    public void continueTimer(final boolean continueTimer) { this.continueTimer = continueTimer; }
+    public void setPauseTimerOption(final boolean pauseTimerOption) {
+        this.pauseTimerOption = pauseTimerOption;
+    }
+
+    public void continueTimer(final boolean continueTimer) {
+        this.continueTimer = continueTimer;
+    }
 
     //getter
-    public boolean isPauseTimerOption() { return this.pauseTimerOption; }
-    public boolean isTimerContinue() { return this.continueTimer; }
-    public boolean isNoTimer() { return this.noTimer; }
+    public boolean isPauseTimerOption() {
+        return this.pauseTimerOption;
+    }
+
+    public boolean isTimerContinue() {
+        return this.continueTimer;
+    }
+
+    public boolean isNoTimer() {
+        return this.noTimer;
+    }
 
     public void changeTimerPanelDirection() {
         this.timer_panel_direction = this.timer_panel_direction.getOpposite();
@@ -85,7 +109,9 @@ public final class TimerPanel extends Table {
         this.blackPlayerTimerTable.resetTimer(blackPlayer);
     }
 
-    public void update(final GameScreen gameScreen) { this.timer_panel_direction.update(this, gameScreen); }
+    public void update(final GameScreen gameScreen) {
+        this.timer_panel_direction.update(this, gameScreen);
+    }
 
     private static final class PlayerTimerTable extends Table {
 

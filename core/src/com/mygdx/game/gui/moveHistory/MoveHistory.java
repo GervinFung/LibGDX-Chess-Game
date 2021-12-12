@@ -6,21 +6,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.MoveLog;
 import com.mygdx.game.chess.engine.pieces.Piece;
 import com.mygdx.game.gui.GuiUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class MoveHistory extends Table {
-    
-    private final static int SIZE = GuiUtils.GAME_BOARD_SR_SIZE / 2;
+
+    private static final int SIZE = GuiUtils.GAME_BOARD_SR_SIZE / 2;
 
     private final Table table;
     private final TakenPiece whiteTakenPiece, blackTakenPiece;
@@ -57,7 +56,9 @@ public final class MoveHistory extends Table {
             }
 
             @Override
-            TakenPieceDirection getOpposite() { return FLIPPED; }
+            TakenPieceDirection getOpposite() {
+                return FLIPPED;
+            }
         }, FLIPPED {
             @Override
             void redo(final MoveHistory moveHistory) {
@@ -68,9 +69,13 @@ public final class MoveHistory extends Table {
             }
 
             @Override
-            TakenPieceDirection getOpposite() { return NORMAL; }
+            TakenPieceDirection getOpposite() {
+                return NORMAL;
+            }
         };
+
         abstract void redo(final MoveHistory moveHistory);
+
         abstract TakenPieceDirection getOpposite();
 
         private void updateMoveHistory(final MoveHistory moveHistory) {
@@ -101,9 +106,13 @@ public final class MoveHistory extends Table {
         this.takenPieceDirection.redo(this);
     }
 
-    public void updateMoveHistory() { this.takenPieceDirection.updateMoveHistory(this); }
+    public void updateMoveHistory() {
+        this.takenPieceDirection.updateMoveHistory(this);
+    }
 
-    public MoveLog getMoveLog() { return this.moveLog; }
+    public MoveLog getMoveLog() {
+        return this.moveLog;
+    }
 
     private static final class TakenPiece extends Table {
 
@@ -121,7 +130,7 @@ public final class MoveHistory extends Table {
 
             final HashMap<Piece, Integer> takenPieces = new HashMap<>();
 
-            for (final Move move: moveLog.getMoves()) {
+            for (final Move move : moveLog.getMoves()) {
                 if (move.isAttack()) {
                     final Piece takenPiece = move.getAttackedPiece();
                     if (takenPiece.getLeague() == this.league) {
@@ -143,25 +152,18 @@ public final class MoveHistory extends Table {
         }
 
         private Piece searchSamePiece(final HashMap<Piece, Integer> takenPieces, final Piece takenPiece) {
-            for (final Piece piece : takenPieces.keySet()) {
-                if (takenPiece.toString().equals(piece.toString())) {
-                    return piece;
-                }
-            }
-            return null;
+            return takenPieces.keySet().parallelStream().filter(piece -> takenPiece.toString().equals(piece.toString())).findFirst().orElse(null);
         }
 
         private List<Piece> sortedPieces(final HashMap<Piece, Integer> takenPiecesMap) {
-            final List<Piece> unsortedPieces = new ArrayList<>(takenPiecesMap.keySet());
-            Collections.sort(unsortedPieces, new Comparator<Piece>() {
-                @Override
-                public int compare(final Piece piece1, final Piece piece2) {
-                    if (piece1.getPieceValue() > piece2.getPieceValue()) { return 1; }
-                    else if (piece1.getPieceValue() < piece2.getPieceValue()) { return -1; }
-                    return 0;
+            return ImmutableList.copyOf(takenPiecesMap.keySet().stream().sorted((piece1, piece2) -> {
+                if (piece1.getPieceValue() > piece2.getPieceValue()) {
+                    return 1;
+                } else if (piece1.getPieceValue() < piece2.getPieceValue()) {
+                    return -1;
                 }
-            });
-            return Collections.unmodifiableList(unsortedPieces);
+                return 0;
+            }).collect(Collectors.toList()));
         }
 
         private void addTakenPiece(final HashMap<Piece, Integer> takenPiecesMap) {

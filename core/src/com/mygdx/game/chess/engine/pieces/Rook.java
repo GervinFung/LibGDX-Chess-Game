@@ -1,5 +1,9 @@
 package com.mygdx.game.chess.engine.pieces;
 
+import static com.mygdx.game.chess.engine.board.Move.MajorAttackMove;
+import static com.mygdx.game.chess.engine.board.Move.MajorMove;
+
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
@@ -7,13 +11,9 @@ import com.mygdx.game.chess.engine.board.Move;
 import com.mygdx.game.chess.engine.board.Tile;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import static com.mygdx.game.chess.engine.board.Move.*;
-
-public final class Rook extends Piece{
+public final class Rook extends Piece {
 
     private static final int[] MOVE_VECTOR_COORDINATE = {-8, -1, 1, 8};
 
@@ -21,10 +21,12 @@ public final class Rook extends Piece{
         super(PieceType.ROOK, piecePosition, league, true);
     }
 
-    public Rook(final League league, final int piecePosition, final boolean isFirstMove) { super(PieceType.ROOK, piecePosition, league, isFirstMove); }
+    public Rook(final League league, final int piecePosition, final boolean isFirstMove) {
+        super(PieceType.ROOK, piecePosition, league, isFirstMove);
+    }
 
     @Override
-    public Collection<Move> calculateLegalMoves(final Board board) {
+    public ImmutableList<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
 
         for (final int CoordinateOFFSET : MOVE_VECTOR_COORDINATE) {
@@ -34,7 +36,7 @@ public final class Rook extends Piece{
             while (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
 
                 if (isEighthColumnExclusion(candidateDestinationCoordinate, CoordinateOFFSET) ||
-                    isFirstColumnExclusion(candidateDestinationCoordinate, CoordinateOFFSET)) {
+                        isFirstColumnExclusion(candidateDestinationCoordinate, CoordinateOFFSET)) {
                     break;
                 }
 
@@ -46,7 +48,7 @@ public final class Rook extends Piece{
                     if (!candidateDestinationTile.isTileOccupied() && this.isLegalMove(board, candidateDestinationCoordinate)) {
                         legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
 
-                    } else if (candidateDestinationTile.isTileOccupied()){
+                    } else if (candidateDestinationTile.isTileOccupied()) {
                         final Piece pieceDestination = candidateDestinationTile.getPiece();
                         final League league = pieceDestination.getLeague();
 
@@ -59,10 +61,13 @@ public final class Rook extends Piece{
             }
         }
 
-        return Collections.unmodifiableList(legalMoves);
+        return ImmutableList.copyOf(legalMoves);
     }
+
     @Override
-    public Rook movedPiece(Move move) { return new Rook(move.getMovedPiece().getLeague(), move.getDestinationCoordinate(), false); }
+    public Rook movedPiece(Move move) {
+        return new Rook(move.getMovedPiece().getLeague(), move.getDestinationCoordinate(), false);
+    }
 
     @Override
     public String toString() {

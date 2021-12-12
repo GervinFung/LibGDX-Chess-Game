@@ -1,6 +1,7 @@
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
 dependencies {
-    implementation 'junit:junit:4.13.1'
+    implementation 'org.testng:testng:6.9.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 

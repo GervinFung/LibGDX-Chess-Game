@@ -30,9 +30,11 @@ public final class About implements Screen {
         this.stage.addActor(table);
     }
 
-    public Stage getStage() { return this.stage; }
+    public Stage getStage() {
+        return this.stage;
+    }
 
-    private TextButton backButton (final ChessGame chessGame) {
+    private TextButton backButton(final ChessGame chessGame) {
         final TextButton textButton = new TextButton("Back to Menu", GuiUtils.UI_SKIN);
         textButton.addListener(new ClickListener() {
             @Override
@@ -62,7 +64,9 @@ public final class About implements Screen {
     }
 
     @Override
-    public void resize (final int width, final int height) { this.stage.getViewport().update(width, height, true); }
+    public void resize(final int width, final int height) {
+        this.stage.getViewport().update(width, height, true);
+    }
 
     @Override
     public void dispose() {
@@ -71,12 +75,19 @@ public final class About implements Screen {
     }
 
     @Deprecated
-    public void show() {}
+    public void show() {
+    }
+
     @Deprecated
-    public void pause() {}
+    public void pause() {
+    }
+
     @Deprecated
-    public void resume() {}
+    public void resume() {
+    }
+
     @Deprecated
-    public void hide() {}
+    public void hide() {
+    }
 
 }

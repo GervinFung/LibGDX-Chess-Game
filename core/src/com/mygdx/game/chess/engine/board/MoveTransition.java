@@ -15,7 +15,9 @@ public final class MoveTransition {
         return this.moveStatus;
     }
 
-    public Board getPreviousBoard() { return this.previousBoard; }
+    public Board getPreviousBoard() {
+        return this.previousBoard;
+    }
 
     public Board getLatestBoard() {
         return this.latestBoard;

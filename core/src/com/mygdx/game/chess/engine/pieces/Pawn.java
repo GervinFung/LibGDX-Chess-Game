@@ -1,17 +1,19 @@
 package com.mygdx.game.chess.engine.pieces;
 
+import static com.mygdx.game.chess.engine.board.Move.PawnAttackMove;
+import static com.mygdx.game.chess.engine.board.Move.PawnEnPassantAttackMove;
+import static com.mygdx.game.chess.engine.board.Move.PawnJump;
+import static com.mygdx.game.chess.engine.board.Move.PawnMove;
+import static com.mygdx.game.chess.engine.board.Move.PawnPromotion;
+
+import com.google.common.collect.ImmutableList;
 import com.mygdx.game.chess.engine.League;
 import com.mygdx.game.chess.engine.board.Board;
 import com.mygdx.game.chess.engine.board.BoardUtils;
 import com.mygdx.game.chess.engine.board.Move;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-
-import static com.mygdx.game.chess.engine.board.Move.*;
 
 public final class Pawn extends Piece {
 
@@ -22,7 +24,7 @@ public final class Pawn extends Piece {
     }
 
     @Override
-    public Collection<Move> calculateLegalMoves(final Board board) {
+    public ImmutableList<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
 
         for (final int currentCandidateOFFSET : MOVE_VECTOR_COORDINATE) {
@@ -43,7 +45,7 @@ public final class Pawn extends Piece {
                     legalMoves.add(new PawnPromotion(pawnMove, new Bishop(super.getLeague(), candidateDestinationCoordinate, false)));
                     legalMoves.add(new PawnPromotion(pawnMove, new Knight(super.getLeague(), candidateDestinationCoordinate, false)));
 
-                } else if (!super.getLeague().isPawnPromotionSquare(candidateDestinationCoordinate) && this.isLegalMove(board, candidateDestinationCoordinate)){
+                } else if (!super.getLeague().isPawnPromotionSquare(candidateDestinationCoordinate) && this.isLegalMove(board, candidateDestinationCoordinate)) {
                     legalMoves.add(new PawnMove(board, this, candidateDestinationCoordinate));
                 }
 
@@ -126,18 +128,20 @@ public final class Pawn extends Piece {
 
             }
         }
-        return Collections.unmodifiableList(legalMoves);
+        return ImmutableList.copyOf(legalMoves);
     }
 
     @Override
-    public Pawn movedPiece(final Move move) { return new Pawn(move.getMovedPiece().getLeague(), move.getDestinationCoordinate()); }
+    public Pawn movedPiece(final Move move) {
+        return new Pawn(move.getMovedPiece().getLeague(), move.getDestinationCoordinate());
+    }
 
     @Override
     public String toString() {
         return PieceType.PAWN.toString();
     }
 
-    public List<Piece> getPromotionPieces(final int destinationCoordinate) {
-        return Collections.unmodifiableList(Arrays.asList(new Queen(super.getLeague(), destinationCoordinate, false), new Rook(super.getLeague(), destinationCoordinate, false), new Bishop(super.getLeague(), destinationCoordinate, false), new Knight(super.getLeague(), destinationCoordinate, false)));
+    public ImmutableList<Piece> getPromotionPieces(final int destinationCoordinate) {
+        return ImmutableList.of(new Queen(super.getLeague(), destinationCoordinate, false), new Rook(super.getLeague(), destinationCoordinate, false), new Bishop(super.getLeague(), destinationCoordinate, false), new Knight(super.getLeague(), destinationCoordinate, false));
     }
 }
